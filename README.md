@@ -2,7 +2,7 @@
 
 
 
-在线体验地址 http://fangyuanxiaozhan.com:4000/register
+在线体验地址 [https://ft.fangyuanxiaozhan.com/register](https://ft.fangyuanxiaozhan.com/register)
 
 
 
@@ -20,7 +20,7 @@
 
 
 
-在线体验地址 http://fangyuanxiaozhan.com:4000/register
+在线体验地址 [https://ft.fangyuanxiaozhan.com/register](https://ft.fangyuanxiaozhan.com/register)
 
 
 
@@ -66,7 +66,7 @@
 
 
 
-在线体验地址 http://fangyuanxiaozhan.com:4000/register
+在线体验地址 [https://ft.fangyuanxiaozhan.com/register](https://ft.fangyuanxiaozhan.com/register)
 
 
 
