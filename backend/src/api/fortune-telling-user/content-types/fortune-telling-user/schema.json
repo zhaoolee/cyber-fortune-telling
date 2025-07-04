@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "fortune_telling_users",
+  "info": {
+    "singularName": "fortune-telling-user",
+    "pluralName": "fortune-telling-users",
+    "displayName": "算命用户",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "username": {
+      "type": "string"
+    },
+    "gender": {
+      "type": "enumeration",
+      "enum": [
+        "male",
+        "female"
+      ]
+    },
+    "birth_date": {
+      "type": "date"
+    },
+    "birth_time": {
+      "type": "time"
+    },
+    "fortune_telling_uid": {
+      "type": "uid"
+    }
+  }
+}

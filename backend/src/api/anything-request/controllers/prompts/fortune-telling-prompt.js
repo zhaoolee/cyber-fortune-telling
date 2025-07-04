@@ -1,4 +1,18 @@
-```
+const moment = require("moment");
+
+/**
+ * Builds the fortune telling prompt based on user information
+ * @param {Object} user - User information including birth details
+ * @returns {string} Formatted prompt for the LLM
+ */
+const buildFortuneTellingPrompt = (user) => {
+  // 基于 "水晶洞","金蟾","貔貅","文昌塔", "关公像","龙龟","葫芦","福禄寿三星","五帝钱", "大象" 随机抽取3个摆件
+  const availableDecor = ["水晶洞","金蟾","貔貅","文昌塔", "关公像","龙龟","葫芦","福禄寿三星","五帝钱", "大象"];
+  const randomDecor = availableDecor.sort(() => Math.random() - 0.5).slice(0, 3);
+  const decorString = randomDecor.join(",");
+
+  const currentDate = moment().format("YYYY-MM-DD");
+  return `
     我是${user.username}，出生信息如下：
     - 出生日期：${user.birth_date} (阳历)
     - 出生时间：${user.birth_time}
@@ -92,5 +106,11 @@
 
     <div class="fortune-tip">{tip信息}</div>
 
-```
 
+    
+  `;
+};
+
+module.exports = {
+  buildFortuneTellingPrompt
+}; 
