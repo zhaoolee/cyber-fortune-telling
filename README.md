@@ -1,6 +1,6 @@
-# Cyber Fortune Telling
+# 玄乎儿分光镜
 
-2025年7月，基于Deepseek的风水算命完成了开源，只需提供[deepseek官方的key](https://platform.deepseek.com/api_keys) 即可通过 docker 启动，完美本地运行。
+2025年7月，基于Deepseek的风水算命项目《玄乎儿分光镜》完成了开源，只需提供[deepseek官方的key](https://platform.deepseek.com/api_keys) 即可通过 docker 启动，完美本地运行。
 
 经过一个月的开发和验证，我发现电脑运行这个程序，就会带来好心情，机魂大悦人也开心，有些人想玩这个程序，但担心泄露个人八字隐私，于是这个程序开源了，有 docker 基础就能完全本地部署。希望各路大师能提供更强的提示词，让这个项目更好玩。
 
