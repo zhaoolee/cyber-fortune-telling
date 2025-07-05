@@ -34,6 +34,10 @@ RUN pnpm install
 # 复制源代码
 COPY . .
 
+# 定义构建时参数
+ARG NEXT_PUBLIC_API_BASE_URL
+# 将构建时参数转换为环境变量
+ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
 
 # 构建 Next.js 应用
 RUN pnpm run build
