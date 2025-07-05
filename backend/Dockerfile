@@ -4,6 +4,10 @@ FROM node:22.14.0
 # 设置工作目录
 WORKDIR /app
 
+# 配置 apt 使用阿里云镜像源加速下载
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
+    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources
+
 # 更新包管理器并安装必要的系统依赖（包括 Sharp 需要的 libvips）
 RUN apt-get update && apt-get install -y \
     python3 \

@@ -101,6 +101,10 @@ docker compose logs -f
 docker compose down
 ```
 
+## 如果不需要Docker数据库服务(请前往.env自定义数据库信息)
+```
+docker compose -f docker-compose-no-database.yml
+```
 
 ## 🛠️ 技术栈
 
