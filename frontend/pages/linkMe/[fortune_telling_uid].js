@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import converter from "@/tools/converter";
 import styles from "@/styles/Markdown.module.css";
 import fortuneTellingUidStyles from "./fortune_telling_uid.module.css";
-import goFullScreen from "@/tools/getFullScreen";
-import exitFullScreen from "@/tools/exitFullScreen";
+import extractDesktopDecoration from "@/tools/extractDesktopDecoration";
+import extractFortuneTips from "@/tools/extractFortuneTips";
+import formatBirthTime from "@/tools/formatBirthTime";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import {
   Button,
   Card,
@@ -30,70 +31,14 @@ import getChineseTraditionalTime from "@/tools/getChineseTraditionalTime";
 import getChineseTraditionalDate from "@/tools/getChineseTraditionalDate";
 import ChatInput from "@/components/ChatInput";
 import EditIcon from "@mui/icons-material/Edit";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import FullscreenIcon from "@mui/icons-material/Fullscreen";
-import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import ChatMarkdownStack from "@/components/ChatMarkdownStack";
 import StyledMarkdown from "@/components/StyledMarkdown";
+import SpiritualPracticeView from "@/components/SpiritualPracticeView";
 // Add API base URL from environment variable
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:11337";
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || "";
 
-// Function to extract desktop decoration image source
-const extractDesktopDecoration = (content) => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(content, "text/html");
-  const deskDecorImg = doc.querySelector("img.desk-decor");
-  return deskDecorImg ? deskDecorImg.getAttribute("src") : "";
-};
 
-// Function to extract fortune tips
-const extractFortuneTips = (content) => {
-  // Convert markdown to HTML first
-  const htmlContent = converter.makeHtml(content);
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(htmlContent, "text/html");
-  const tipElements = doc.querySelectorAll(".fortune-tip");
-  const tips = Array.from(tipElements).map((tip) => {
-    // Remove any leading numbers, dots, and whitespace
-    return tip.textContent.replace(/^\d*\.?\s*/, "");
-  });
-  return tips;
-};
-
-// Add custom loading animation component
-const LoadingSpinner = () => (
-  <Box
-    component="img"
-    src="/loading.png"
-    alt="Loading..."
-    sx={{
-      width: 60,
-      height: 60,
-      animation:
-        "customRotate 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite",
-      "@keyframes customRotate": {
-        "0%": {
-          transform: "rotate(0deg)",
-        },
-        "50%": {
-          transform: "rotate(180deg)",
-        },
-        "100%": {
-          transform: "rotate(360deg)",
-        },
-      },
-    }}
-  />
-);
-
-// 格式化时间为 HH:mm:ss.SSS
-function formatBirthTime(time) {
-  if (!time) return "";
-  if (/^\d{2}:\d{2}:\d{2}\.\d{3}$/.test(time)) return time;
-  if (/^\d{2}:\d{2}:\d{2}$/.test(time)) return time + ".000";
-  return time + ":00.000";
-}
 
 // 获取基本信息
 function EditBasicInfo({ fortune_telling_uid, setIsEditing, isEditing }) {
@@ -697,184 +642,7 @@ function FortuneTellingView({
   );
 }
 
-// 创建玄修视图组件
-function SpiritualPracticeView({
-  tips,
-  currentTip,
-  animationKey,
-  desktopDecoration,
-  setSpiritualPractice,
-}) {
-  const [isFullScreen, setIsFullScreen] = useState(false);
 
-
-  // useEffect(() => {
-  //   if (isFullScreen) {
-  //     exitFullScreen();
-  //   } else {
-  //     goFullScreen();
-  //   }
-  // }, [isFullScreen]);
-  return (
-    <Box
-      sx={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1,
-        backgroundImage:
-          "linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)), url('/api/random-desk-decor-bg')",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-      }}
-    >
-      {/* 右上角小按钮，点击即可进入全屏按钮, 进入全屏后，点击即可退出全屏 */}
-      {isFullScreen === false && <IconButton
-        color="primary"
-        onClick={() => {
-          setIsFullScreen(true);
-          goFullScreen();
-        }}
-        sx={{
-          position: "fixed",
-          top: 20,
-          right: 20,
-          zIndex: 1000,
-        }}
-      >
-        <FullscreenIcon sx={{ fontSize: 32, color: "#FFD700" }} />
-      </IconButton>}
-      {isFullScreen === true && <IconButton
-        color="primary"
-        onClick={() => {
-          setIsFullScreen(false);
-          exitFullScreen();
-        }}
-        sx={{
-          position: "fixed",
-          top: 20,
-          right: 20,
-          zIndex: 1000,
-        }}
-      >
-        <FullscreenExitIcon sx={{ fontSize: 32, color: "#FFD700" }} />
-      </IconButton>}
-
-      {tips.length > 0 && (
-        <motion.div
-          key={animationKey}
-          style={{
-            position: "fixed",
-            bottom: "15vh",
-            zIndex: 1000,
-            maxWidth: "calc(100% - 40px)",
-            padding: "10px",
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
-            borderRadius: "8px",
-            border: "2px solid #FFD700",
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-          }}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{
-            opacity: [0, 1, 1, 0],
-            y: [-20, 0, 0, -20],
-            transition: {
-              duration: 10,
-              repeat: 0,
-              ease: "easeInOut",
-              times: [0, 0.1, 0.9, 1],
-            },
-          }}
-        >
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{
-              color: "#FFD700",
-              textAlign: "center",
-              fontWeight: "bold",
-              textShadow: "0 0 10px rgba(255, 215, 0, 0.5)",
-            }}
-          >
-            {currentTip}
-          </Typography>
-        </motion.div>
-      )}
-
-      {desktopDecoration && (
-        <motion.div
-          style={{
-            filter: "drop-shadow(0 0 20px rgba(255, 215, 0, 0.5))",
-          }}
-          animate={{
-            scale: [1, 1.02, 1],
-            filter: [
-              "drop-shadow(0 0 20px rgba(255, 215, 0, 0.5))",
-              "drop-shadow(0 0 30px rgba(255, 215, 0, 0.8))",
-              "drop-shadow(0 0 20px rgba(255, 215, 0, 0.5))",
-            ],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-            times: [0, 0.5, 1],
-          }}
-        >
-          <Box
-            component="img"
-            src={desktopDecoration}
-            // 双击触发
-            onDoubleClick={() => {
-              setIsFullScreen(!isFullScreen);
-              if (isFullScreen) {
-                exitFullScreen();
-              } else {
-                goFullScreen();
-              }
-            }}
-            alt="桌面装饰"
-            sx={{
-              height: "61.8vh",
-              width: "auto",
-              maxWidth: "100%",
-              objectFit: "contain",
-              display: "block",
-              "@media (maxWidth: 600px)": {
-                height: "auto",
-                maxHeight: "61.8vh",
-              },
-            }}
-          />
-        </motion.div>
-      )}
-      {isFullScreen === false && <IconButton
-        color="primary"
-        onClick={() => setSpiritualPractice(false)}
-        sx={{
-          position: "fixed",
-          top: 20,
-          left: 20,
-          zIndex: 2,
-          // backgroundColor: '#1A237E',
-          boxShadow: "0 2px 8px #FFD70044",
-          "&:hover": {
-            border: "2px solid #FFD700",
-          },
-        }}
-      >
-        <ArrowBackIcon sx={{ fontSize: 32, color: "#FFD700" }} />
-      </IconButton>}
-    </Box>
-  );
-}
 
 function LinkMe({ fortune_telling_uid }) {
   // 使用状态来存储请求结果
