@@ -15,6 +15,14 @@ import PauseIcon from "@mui/icons-material/Pause";
 function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }) {
   const [currentTime, setCurrentTime] = useState(new Date());
   
+  // 屏幕方向状态管理
+  const [isLandscape, setIsLandscape] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth > window.innerHeight;
+    }
+    return false;
+  });
+  
   // 番茄钟状态管理
   const [pomodoroTime, setPomodoroTime] = useState(25 * 60); // 25分钟（秒）
   const [breakTime, setBreakTime] = useState(5 * 60); // 5分钟（秒）
@@ -89,6 +97,32 @@ function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }
       checkAndUpdateTodayCycles();
     }, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // 监听屏幕方向变化
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      // 延迟一点检查，确保屏幕尺寸已更新
+      setTimeout(() => {
+        setIsLandscape(window.innerWidth > window.innerHeight);
+      }, 100);
+    };
+
+    const handleResize = () => {
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+
+    if (typeof window !== 'undefined') {
+      // 监听屏幕方向变化事件
+      window.addEventListener('orientationchange', handleOrientationChange);
+      // 监听窗口大小变化事件
+      window.addEventListener('resize', handleResize);
+      
+      return () => {
+        window.removeEventListener('orientationchange', handleOrientationChange);
+        window.removeEventListener('resize', handleResize);
+      };
+    }
   }, []);
 
   // 番茄钟定时器
@@ -173,12 +207,15 @@ function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 4,
-        padding: 2,
-        flexDirection: { xs: 'column', md: 'row' }, // 移动端垂直布局，桌面端水平布局
+        gap: isLandscape ? 6 : 2, // 横屏时增大间距
+        padding: isLandscape ? 3 : 1, // 横屏时增大内边距
+        flexDirection: isLandscape ? 'row' : 'column', // 横屏时水平布局，竖屏时垂直布局
+        transform: isLandscape ? 'scale(1.2)' : 'scale(1)', // 横屏时放大整体尺寸
+        transformOrigin: 'center',
+        transition: 'all 0.3s ease-in-out', // 平滑过渡效果
         '@media (max-width: 600px)': {
-          gap: 0,
-          padding: 0.1,
+          gap: isLandscape ? 4 : 0,
+          padding: isLandscape ? 2 : 0.1,
         },
       }}
     >
@@ -190,11 +227,11 @@ function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: { xs: 0.2, sm: 1, md: 2 }, // 进一步减少内边距
-          maxWidth: { xs: 'calc(100% - 16px)', sm: '380px', md: '400px' }, // 移动端占据更多宽度
-          minHeight: { xs: '120px', sm: '150px', md: '170px' }, // 减少时间模块高度
-          width: { xs: 'calc(100% - 16px)', md: 'auto' }, // 移动端占据更多宽度
-          margin: { xs: '16px 8px 4px 8px', md: '0 16px 0 16px' }, // 进一步减少下边距
+          padding: isLandscape ? { xs: 1, sm: 2, md: 3 } : { xs: 0.2, sm: 1, md: 2 }, // 横屏时增大内边距
+          maxWidth: isLandscape ? { xs: '500px', sm: '600px', md: '700px' } : { xs: 'calc(100% - 16px)', sm: '380px', md: '400px' }, // 横屏时增大最大宽度
+          minHeight: isLandscape ? { xs: '200px', sm: '250px', md: '300px' } : { xs: '120px', sm: '150px', md: '170px' }, // 横屏时增大最小高度
+          width: isLandscape ? 'auto' : { xs: 'calc(100% - 16px)', md: 'auto' }, // 横屏时自适应宽度
+          margin: isLandscape ? '0 16px' : { xs: '16px 8px 4px 8px', md: '0 16px 0 16px' }, // 横屏时调整边距
         }}
       >
         <Typography
@@ -203,9 +240,9 @@ function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }
             color: '#FFD700',
             fontWeight: 'bold',
             textShadow: '0 0 20px rgba(255, 215, 0, 0.8)',
-            marginBottom: { xs: 1, sm: 1.5, md: 2 }, // 减少时间显示的下边距
+            marginBottom: isLandscape ? { xs: 2, sm: 2.5, md: 3 } : { xs: 1, sm: 1.5, md: 2 }, // 横屏时增大下边距
             fontFamily: 'monospace',
-            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }, // 响应式字体大小
+            fontSize: isLandscape ? { xs: '3rem', sm: '4rem', md: '5rem' } : { xs: '2rem', sm: '2.5rem', md: '3rem' }, // 横屏时增大字体
           }}
         >
           {formatTime(currentTime)}
@@ -216,8 +253,8 @@ function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }
             color: '#FFD700',
             textAlign: 'center',
             opacity: 0.9,
-            fontSize: { xs: '0.9rem', sm: '1rem', md: '1.25rem' }, // 响应式字体大小
-            marginBottom: { xs: 0.5, sm: 1, md: 1.5 }, // 减少日期显示的下边距
+            fontSize: isLandscape ? { xs: '1.2rem', sm: '1.5rem', md: '1.8rem' } : { xs: '0.9rem', sm: '1rem', md: '1.25rem' }, // 横屏时增大字体
+            marginBottom: isLandscape ? { xs: 1, sm: 1.5, md: 2 } : { xs: 0.5, sm: 1, md: 1.5 }, // 横屏时增大下边距
           }}
         >
           {formatDate(currentTime)}
@@ -273,10 +310,10 @@ function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          maxWidth: { xs: 'calc(100% - 16px)', sm: '380px', md: '400px' }, // 移动端占据更多宽度
+          maxWidth: isLandscape ? { xs: '500px', sm: '600px', md: '700px' } : { xs: 'calc(100% - 16px)', sm: '380px', md: '400px' }, // 横屏时增大最大宽度
           position: 'relative',
-          width: { xs: 'calc(100% - 16px)', md: 'auto' }, // 移动端占据更多宽度
-          margin: { xs: '-60px 8px 32px 8px', md: '-40px 16px 0 16px' }, // 移动端增加底部空间
+          width: isLandscape ? 'auto' : { xs: 'calc(100% - 16px)', md: 'auto' }, // 横屏时自适应宽度
+          margin: isLandscape ? '0 16px' : { xs: '-60px 8px 32px 8px', md: '-40px 16px 0 16px' }, // 横屏时调整边距
         }}
       >
         {/* 番茄钟主体 */}
@@ -284,16 +321,16 @@ function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }
           component={motion.div}
           sx={{
             position: 'relative',
-            width: 'min(85%, 300px)',
-            height: 'min(85%, 300px)',
+            width: isLandscape ? 'min(85%, 400px)' : 'min(85%, 300px)', // 横屏时增大表盘尺寸
+            height: isLandscape ? 'min(85%, 400px)' : 'min(85%, 300px)', // 横屏时增大表盘尺寸
             aspectRatio: '1/1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             filter: 'drop-shadow(0 0 20px rgba(255, 215, 0, 0.5))',
             '@media (max-width: 600px)': {
-              width: 'min(85%, 280px)', // 移动端缩小番茄钟表盘
-              height: 'min(85%, 280px)',
+              width: isLandscape ? 'min(85%, 350px)' : 'min(85%, 280px)', // 横屏时移动端也增大表盘
+              height: isLandscape ? 'min(85%, 350px)' : 'min(85%, 280px)',
             },
           }}
           animate={{
@@ -452,9 +489,9 @@ function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }
               zIndex: 20, // 提高时间显示层级，确保在所有元素上方
               userSelect: 'none',
               backgroundColor: 'rgba(0, 0, 0, 0.6)', // 增加背景透明度提高可读性
-              padding: { xs: '6px 12px', sm: '8px 16px' }, // 响应式内边距
+              padding: isLandscape ? { xs: '8px 16px', sm: '12px 20px' } : { xs: '6px 12px', sm: '8px 16px' }, // 横屏时增大内边距
               borderRadius: '12px',
-              fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.5rem' }, // 增大时间显示字体
+              fontSize: isLandscape ? { xs: '3rem', sm: '4rem', md: '5rem' } : { xs: '2.2rem', sm: '2.8rem', md: '3.5rem' }, // 横屏时增大字体
             }}
           >
             {formatPomodoroTime(currentSession)}
@@ -499,13 +536,13 @@ function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }
               color: '#FFD700',
               border: '3px solid #FFD700',
               borderRadius: '50px', // 圆角长条形
-              width: { xs: 180, sm: 220 }, // 增大长条形宽度
-              height: { xs: 60, sm: 70 }, // 增大长条形高度
+              width: isLandscape ? { xs: 240, sm: 280 } : { xs: 180, sm: 220 }, // 横屏时增大宽度
+              height: isLandscape ? { xs: 80, sm: 90 } : { xs: 60, sm: 70 }, // 横屏时增大高度
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: { xs: 1.5, sm: 2 }, // 增大图标和文字之间的间距
-              fontSize: { xs: '1.8rem', sm: '2.2rem' }, // 增大图标尺寸
+              gap: isLandscape ? { xs: 2, sm: 2.5 } : { xs: 1.5, sm: 2 }, // 横屏时增大间距
+              fontSize: isLandscape ? { xs: '2.2rem', sm: '2.8rem' } : { xs: '1.8rem', sm: '2.2rem' }, // 横屏时增大图标尺寸
               boxShadow: '0 0 15px rgba(255, 215, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2)',
               transition: 'all 0.3s ease',
               cursor: 'pointer',
@@ -523,7 +560,7 @@ function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }
             {isRunning ? <PauseIcon /> : <PlayArrowIcon />}
             <Typography
               sx={{
-                fontSize: { xs: '16px', sm: '18px' }, // 增大文字尺寸
+                fontSize: isLandscape ? { xs: '20px', sm: '24px' } : { xs: '16px', sm: '18px' }, // 横屏时增大文字尺寸
                 fontWeight: 'bold',
                 color: '#FFD700',
                 textShadow: '0 0 5px rgba(255, 215, 0, 0.5)',

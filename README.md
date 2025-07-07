@@ -88,6 +88,9 @@ OPENAI_BASE_URL=https://api.deepseek.com/v1
 ### 使用 Docker Compose（推荐）
 
 ```bash
+# 构建服务
+docker compose build --no-cache
+
 # 启动所有服务
 docker compose up
 
