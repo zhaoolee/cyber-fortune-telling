@@ -53,6 +53,9 @@ const buildFortuneTellingPrompt = (user) => {
       <div class="fortune-story-item">{谶语小诗语句}</div>
     </div>
 
+
+
+
     ## 🍀八字与流年分析 ${user.username}今日${currentDate}具体运势分析：
     - 事业与工作：
     - 财运：
@@ -91,6 +94,16 @@ const buildFortuneTellingPrompt = (user) => {
     <div class="food">{食物描述信息}</div>
     <div class="food">{食物描述信息}</div>
     <div class="food">{食物描述信息}</div>
+
+    ## 🗓️传统黄历
+
+    <div class="fortune-yi">宜：{宜}</div>
+    <div class="fortune-ji">忌：{忌}</div>
+    <div class="fortune-cai">财神方位：{财神方位}</div>
+    <div class="fortune-xi">喜神方位：{喜神方位}</div>
+    <div class="fortune-fu">福神方位：{福神方位}</div>
+
+    
 
 
     ## 🪆基于以上分析, 今天适合在桌面摆放的一个摆件为{摆件名}:

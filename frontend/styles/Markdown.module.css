@@ -175,6 +175,46 @@
   background-color: #1A237E;
 }
 
+.markdown-content :global(.fortune-yi) {
+  /* 绿色 */
+  color: #008000;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+
+
+.markdown-content :global(.fortune-ji) {
+  /* 红色 */ 
+  color: #FF0000;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.markdown-content :global(.fortune-cai) {
+  /* 黄色 */
+  color: #FFD602;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.markdown-content :global(.fortune-xi) {
+  /* 深粉色 */
+  color: #FF1493;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.markdown-content :global(.fortune-fu) {
+  /* 紫色 */
+  color: #800080;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+
+
+
 
 @keyframes waving {
   0% {

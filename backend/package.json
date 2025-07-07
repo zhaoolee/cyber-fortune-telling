@@ -13,6 +13,7 @@
     "@strapi/plugin-cloud": "5.10.3",
     "@strapi/plugin-users-permissions": "5.10.3",
     "@strapi/strapi": "5.10.3",
+    "@swc/core": "^1.12.9",
     "axios": "^1.7.9",
     "better-sqlite3": "11.3.0",
     "intellinode": "^2.2.9",
