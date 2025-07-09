@@ -367,6 +367,21 @@
   font-size: 1.2em;
   line-height: 1.8;
 
+  /* 中国传统书法字体优先级 */
+  font-family: 'STXingkai', 'STKaiti', 'KaiTi', 'KaiTi_GB2312', 'STBaoli', 'STCaiyun', 'STHupo', 'STLiti', 'LiSu', 'STFangsong', 'FangSong', 'STXinwei', 'STSong', 'SimSun', 'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', sans-serif;
+
+  /* 传统药方下划线效果 */
+  text-decoration: underline;
+  text-decoration-color: rgba(44, 24, 16, 0.2);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+
+  /* 传统药方字间距和毛笔字效果 */
+  letter-spacing: 2px;
+  text-shadow: 
+    0 1px 1px rgba(44, 24, 16, 0.1),
+    1px 0 1px rgba(44, 24, 16, 0.05);
+
   /* 纸张效果 */
   background: linear-gradient(135deg, #F5F5DC 0%, #FFEAA7 20%, #F5F5DC 40%, #FFF8DC 60%, #F5F5DC 80%, #FFEAA7 100%);
   border: 2px solid #D4B896;
@@ -393,6 +408,35 @@
   
   /* 调整文字颜色以适应纸张背景 */
   color: #2C1810;
+  
+  /* 传统边框装饰 */
+  border-left: 4px double #D4B896;
+  border-right: 4px double #D4B896;
+}
+
+/* 传统药方印章效果 */
+.markdown-content :global(.health-summary)::after {
+  content: '仁';
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(45deg, rgba(204, 85, 0, 0.3), rgba(255, 102, 0, 0.3));
+  color: rgba(139, 69, 19, 0.4);
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(139, 69, 19, 0.2);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  font-family: 'STXingkai', 'STKaiti', 'KaiTi', 'KaiTi_GB2312', 'STBaoli', 'STCaiyun', 'STHupo', 'STLiti', 'LiSu', 'STFangsong', 'FangSong', 'STXinwei', serif;
+  opacity: 0.3;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
 }
 
 /* 纸张纹理效果 */
