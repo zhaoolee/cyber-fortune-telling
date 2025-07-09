@@ -109,6 +109,27 @@ docker compose down
 docker compose -f docker-compose-no-database.yml
 ```
 
+## 开发者备忘
+
+```
+# 拉取代码
+git checkout dev
+
+git pull
+
+# 构建新镜像
+
+docker compose -f ./docker-compose-no-database.yml build --no-cache
+
+# 关闭旧服务
+docker compose -f ./docker-compose-no-database.yml down
+
+
+# 启动
+docker compose -f ./docker-compose-no-database.yml up -d
+
+```
+
 ## 🛠️ 技术栈
 
 ### 前端
