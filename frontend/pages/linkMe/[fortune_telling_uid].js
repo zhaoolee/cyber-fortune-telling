@@ -1431,6 +1431,7 @@ function LinkMeContent({ fortune_telling_uid }) {
     try {
       setGetFortuneTellingUserInfoLoading(true);
       setGetFortuneTellingUserInfoError(null);
+
       // 发送 GET 请求
       const response = await axios.get(
         `${API_BASE_URL}/api/fortune-telling-users?username=*&filters[fortune_telling_uid][$eq]=${fortune_telling_uid}&date=${moment().format(
@@ -1518,6 +1519,7 @@ function LinkMeContent({ fortune_telling_uid }) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      setNewAIResponseIsStreaming(true);
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let accumulatedText = "";
@@ -1528,6 +1530,7 @@ function LinkMeContent({ fortune_telling_uid }) {
         if (done) {
           setIsStreaming(false);
           setLoading(false);
+          setNewAIResponseIsStreaming(false);
           // Extract desktop decoration when streaming is done
           const decorationSrc = extractDesktopDecoration(accumulatedText);
           if (decorationSrc) {

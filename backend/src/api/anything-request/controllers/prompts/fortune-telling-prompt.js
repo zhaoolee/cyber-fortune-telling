@@ -109,7 +109,7 @@ const buildFortuneTellingPrompt = (user) => {
     </div>
 
 
-    ## 来自老中医的养生健康建议:
+    ## 🌿今日中医养生健康建议:
 
     <div class="health-advice">
       <div class="health-advice-item">{健康建议}</div>
