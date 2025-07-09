@@ -417,22 +417,48 @@ export interface ApiFortuneTellingUserFortuneTellingUser
   attributes: {
     birth_date: Schema.Attribute.Date;
     birth_time: Schema.Attribute.Time;
+    body_discomfort: Schema.Attribute.JSON;
+    common_symptoms: Schema.Attribute.JSON;
+    constitution_type: Schema.Attribute.Enumeration<
+      [
+        'pinghe',
+        'qixu',
+        'yangxu',
+        'yinxu',
+        'tanshi',
+        'shire',
+        'xueyu',
+        'qiyu',
+        'tebing',
+      ]
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    dietary_preferences: Schema.Attribute.JSON;
+    exercise_frequency: Schema.Attribute.Enumeration<
+      ['daily', 'frequent', 'occasional', 'rarely', 'never']
+    >;
     fortune_telling_uid: Schema.Attribute.UID;
     gender: Schema.Attribute.Enumeration<['male', 'female']>;
+    health_info: Schema.Attribute.Text;
+    height: Schema.Attribute.Decimal;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::fortune-telling-user.fortune-telling-user'
     > &
       Schema.Attribute.Private;
+    profession: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    sleep_quality: Schema.Attribute.Enumeration<
+      ['excellent', 'good', 'average', 'poor', 'very_poor']
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     username: Schema.Attribute.String;
+    weight: Schema.Attribute.Decimal;
   };
 }
 

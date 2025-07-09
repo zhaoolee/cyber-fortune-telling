@@ -20,6 +20,12 @@ import {
   Radio,
   Input,
   IconButton,
+  Select,
+  MenuItem,
+  Checkbox,
+  FormGroup,
+  FormControl,
+  FormLabel,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import moment from "moment";
@@ -34,9 +40,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import ChatMarkdownStack from "@/components/ChatMarkdownStack";
 import StyledMarkdown from "@/components/StyledMarkdown";
 import SpiritualPracticeView from "@/components/SpiritualPracticeView";
+import { useRouter } from "next/router";
 // Add API base URL from environment variable
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:11337";
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || "";
+
+// 枚举映射将从后端API获取
 
 
 
@@ -47,11 +56,22 @@ function EditBasicInfo({ fortune_telling_uid, setIsEditing, isEditing }) {
     gender: "",
     birth_date: "",
     birth_time: "",
+    height: "",
+    weight: "",
+    profession: "",
+    constitution_type: "",
+    sleep_quality: "",
+    exercise_frequency: "",
+    common_symptoms: [],
+    dietary_preferences: [],
+    body_discomfort: [],
+    health_info: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [fortuneTellingUserInfo, setFortuneTellingUserInfo] = useState({});
+  const [enumMappings, setEnumMappings] = useState({});
 
   useEffect(() => {
     if (fortuneTellingUserInfo) {
@@ -60,6 +80,16 @@ function EditBasicInfo({ fortune_telling_uid, setIsEditing, isEditing }) {
         gender: fortuneTellingUserInfo.gender || "",
         birth_date: fortuneTellingUserInfo.birth_date || "",
         birth_time: fortuneTellingUserInfo.birth_time || "",
+        height: fortuneTellingUserInfo.height || "",
+        weight: fortuneTellingUserInfo.weight || "",
+        profession: fortuneTellingUserInfo.profession || "",
+        constitution_type: fortuneTellingUserInfo.constitution_type || "",
+        sleep_quality: fortuneTellingUserInfo.sleep_quality || "",
+        exercise_frequency: fortuneTellingUserInfo.exercise_frequency || "",
+        common_symptoms: fortuneTellingUserInfo.common_symptoms || [],
+        dietary_preferences: fortuneTellingUserInfo.dietary_preferences || [],
+        body_discomfort: fortuneTellingUserInfo.body_discomfort || [],
+        health_info: fortuneTellingUserInfo.health_info || "",
       });
     }
   }, [fortuneTellingUserInfo]);
@@ -67,6 +97,16 @@ function EditBasicInfo({ fortune_telling_uid, setIsEditing, isEditing }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (fieldName, value) => {
+    setFormData((prev) => {
+      const currentArray = prev[fieldName] || [];
+      const newArray = currentArray.includes(value)
+        ? currentArray.filter(item => item !== value)
+        : [...currentArray, value];
+      return { ...prev, [fieldName]: newArray };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -79,13 +119,30 @@ function EditBasicInfo({ fortune_telling_uid, setIsEditing, isEditing }) {
         setError("无效的用户信息");
         return;
       }
+      
+      const submitData = {
+        ...formData,
+        birth_time: formatBirthTime(formData.birth_time),
+      };
+      
+      // 处理空字段
+      if (submitData.height === "") delete submitData.height;
+      if (submitData.weight === "") delete submitData.weight;
+      if (submitData.profession === "") delete submitData.profession;
+      if (submitData.constitution_type === "") delete submitData.constitution_type;
+      if (submitData.sleep_quality === "") delete submitData.sleep_quality;
+      if (submitData.exercise_frequency === "") delete submitData.exercise_frequency;
+      if (submitData.health_info === "") delete submitData.health_info;
+      
+      // 处理数组字段
+      if (submitData.common_symptoms.length === 0) delete submitData.common_symptoms;
+      if (submitData.dietary_preferences.length === 0) delete submitData.dietary_preferences;
+      if (submitData.body_discomfort.length === 0) delete submitData.body_discomfort;
+      
       await axios.put(
         `${API_BASE_URL}/api/fortune-telling-users/${fortuneTellingUserInfo.documentId}`,
         {
-          data: {
-            ...formData,
-            birth_time: formatBirthTime(formData.birth_time),
-          },
+          data: submitData,
         },
         {
           headers: {
@@ -99,6 +156,17 @@ function EditBasicInfo({ fortune_telling_uid, setIsEditing, isEditing }) {
       setError("保存失败，请重试。");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchEnumMappings = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/fortune-telling-users/enum-mappings`);
+      setEnumMappings(response.data.data);
+    } catch (error) {
+      console.error('获取枚举映射失败:', error);
+      // 如果获取失败，设置为空对象，UI会显示原始的枚举值
+      setEnumMappings({});
     }
   };
 
@@ -123,6 +191,7 @@ function EditBasicInfo({ fortune_telling_uid, setIsEditing, isEditing }) {
   };
 
   useEffect(() => {
+    fetchEnumMappings();
     fetchBasicUserInfo();
   }, []);
 
@@ -288,6 +357,327 @@ function EditBasicInfo({ fortune_telling_uid, setIsEditing, isEditing }) {
                   },
                 }}
               />
+              
+              <Typography
+                variant="subtitle1"
+                sx={{ 
+                  color: "#FFD700", 
+                  fontWeight: "bold", 
+                  textAlign: "center",
+                  mt: 2,
+                  mb: 1 
+                }}
+              >
+                可选信息
+              </Typography>
+              
+              <Select
+                name="height"
+                value={formData.height}
+                onChange={handleChange}
+                fullWidth
+                displayEmpty
+                variant="outlined"
+                sx={{
+                  color: "#000",
+                  backgroundColor: "#FFD700",
+                  borderRadius: 2,
+                  fontSize: 18,
+                  height: 56,
+                  "& .MuiSelect-select": {
+                    paddingTop: "16px",
+                    paddingBottom: "16px",
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#FFD700",
+                  },
+                }}
+              >
+                <MenuItem value="" sx={{ color: "#666" }}>
+                  选择身高
+                </MenuItem>
+                {Array.from({ length: 201 }, (_, i) => {
+                  const height = (50 + i) / 100; // 0.50m to 2.50m
+                  return (
+                    <MenuItem key={height} value={height}>
+                      {height.toFixed(2)}米
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+              
+              <Select
+                name="weight"
+                value={formData.weight}
+                onChange={handleChange}
+                fullWidth
+                displayEmpty
+                variant="outlined"
+                sx={{
+                  color: "#000",
+                  backgroundColor: "#FFD700",
+                  borderRadius: 2,
+                  fontSize: 18,
+                  height: 56,
+                  "& .MuiSelect-select": {
+                    paddingTop: "16px",
+                    paddingBottom: "16px",
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#FFD700",
+                  },
+                }}
+              >
+                <MenuItem value="" sx={{ color: "#666" }}>
+                  选择体重
+                </MenuItem>
+                {Array.from({ length: 196 }, (_, i) => {
+                  const weight = 5 + i; // 5kg to 200kg
+                  return (
+                    <MenuItem key={weight} value={weight}>
+                      {weight}公斤
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+              
+              <TextField
+                name="profession"
+                label="职业"
+                value={formData.profession}
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                placeholder="可选填写您的职业或工作领域..."
+                InputProps={{
+                  sx: {
+                    color: "#000",
+                    backgroundColor: "#FFD700",
+                    borderRadius: 2,
+                    fontSize: 18,
+                    height: 56,
+                  },
+                }}
+                InputLabelProps={{
+                  sx: {
+                    color: "#000",
+                    fontWeight: "bold",
+                    "&.MuiInputLabel-shrink": {
+                      backgroundColor: "#FFD700",
+                      color: "#000",
+                      px: 0.5,
+                      borderRadius: 1,
+                      zIndex: 1,
+                    },
+                  },
+                }}
+              />
+              
+              <Typography
+                variant="subtitle1"
+                sx={{ 
+                  color: "#FFD700", 
+                  fontWeight: "bold", 
+                  textAlign: "center",
+                  mt: 3,
+                  mb: 1 
+                }}
+              >
+                健康状况评估
+              </Typography>
+              
+              <Select
+                name="constitution_type"
+                value={formData.constitution_type}
+                onChange={handleChange}
+                fullWidth
+                displayEmpty
+                variant="outlined"
+                sx={{
+                  color: "#000",
+                  backgroundColor: "#FFD700",
+                  borderRadius: 2,
+                  fontSize: 18,
+                  height: 56,
+                  "& .MuiSelect-select": {
+                    paddingTop: "16px",
+                    paddingBottom: "16px",
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#FFD700",
+                  },
+                }}
+              >
+                <MenuItem value="" sx={{ color: "#666" }}>
+                  选择体质类型
+                </MenuItem>
+                {Object.entries(enumMappings.constitution_type || {}).map(([value, label]) => (
+                  <MenuItem key={value} value={value} sx={{ fontSize: "14px" }}>
+                    {label}
+                  </MenuItem>
+                ))}
+              </Select>
+              
+              <Select
+                name="sleep_quality"
+                value={formData.sleep_quality}
+                onChange={handleChange}
+                fullWidth
+                displayEmpty
+                variant="outlined"
+                sx={{
+                  color: "#000",
+                  backgroundColor: "#FFD700",
+                  borderRadius: 2,
+                  fontSize: 18,
+                  height: 56,
+                  "& .MuiSelect-select": {
+                    paddingTop: "16px",
+                    paddingBottom: "16px",
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#FFD700",
+                  },
+                }}
+              >
+                <MenuItem value="" sx={{ color: "#666" }}>
+                  选择睡眠质量
+                </MenuItem>
+                {Object.entries(enumMappings.sleep_quality || {}).map(([value, label]) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
+                  </MenuItem>
+                ))}
+              </Select>
+              
+              <Select
+                name="exercise_frequency"
+                value={formData.exercise_frequency}
+                onChange={handleChange}
+                fullWidth
+                displayEmpty
+                variant="outlined"
+                sx={{
+                  color: "#000",
+                  backgroundColor: "#FFD700",
+                  borderRadius: 2,
+                  fontSize: 18,
+                  height: 56,
+                  "& .MuiSelect-select": {
+                    paddingTop: "16px",
+                    paddingBottom: "16px",
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#FFD700",
+                  },
+                }}
+              >
+                <MenuItem value="" sx={{ color: "#666" }}>
+                  选择运动频率
+                </MenuItem>
+                {Object.entries(enumMappings.exercise_frequency || {}).map(([value, label]) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
+                  </MenuItem>
+                ))}
+              </Select>
+              
+              <FormControl component="fieldset" sx={{ mt: 2 }}>
+                <FormLabel component="legend" sx={{ color: "#FFD700", fontWeight: "bold", mb: 1 }}>
+                  常见症状 (可多选)
+                </FormLabel>
+                <FormGroup row>
+                  {["失眠", "头痛", "胃痛", "便秘", "腹泻", "疲劳", "心悸", "咳嗽", "腰痛", "关节痛"].map((symptom) => (
+                    <FormControlLabel
+                      key={symptom}
+                      control={
+                        <Checkbox
+                          checked={formData.common_symptoms.includes(symptom)}
+                          onChange={() => handleCheckboxChange("common_symptoms", symptom)}
+                          sx={{ color: "#FFD700", "&.Mui-checked": { color: "#FFD700" } }}
+                        />
+                      }
+                      label={<span style={{ color: "#FFD700", fontSize: "14px" }}>{symptom}</span>}
+                    />
+                  ))}
+                </FormGroup>
+              </FormControl>
+              
+              <FormControl component="fieldset" sx={{ mt: 2 }}>
+                <FormLabel component="legend" sx={{ color: "#FFD700", fontWeight: "bold", mb: 1 }}>
+                  饮食偏好 (可多选)
+                </FormLabel>
+                <FormGroup row>
+                  {["偏爱辛辣", "偏爱甜食", "偏爱油腻", "偏爱生冷", "偏爱热食", "清淡饮食", "素食主义", "不规律饮食"].map((preference) => (
+                    <FormControlLabel
+                      key={preference}
+                      control={
+                        <Checkbox
+                          checked={formData.dietary_preferences.includes(preference)}
+                          onChange={() => handleCheckboxChange("dietary_preferences", preference)}
+                          sx={{ color: "#FFD700", "&.Mui-checked": { color: "#FFD700" } }}
+                        />
+                      }
+                      label={<span style={{ color: "#FFD700", fontSize: "14px" }}>{preference}</span>}
+                    />
+                  ))}
+                </FormGroup>
+              </FormControl>
+              
+              <FormControl component="fieldset" sx={{ mt: 2 }}>
+                <FormLabel component="legend" sx={{ color: "#FFD700", fontWeight: "bold", mb: 1 }}>
+                  身体不适部位 (可多选)
+                </FormLabel>
+                <FormGroup row>
+                  {["头部", "颈部", "肩部", "背部", "腰部", "腹部", "腿部", "脚部", "手部", "胸部"].map((part) => (
+                    <FormControlLabel
+                      key={part}
+                      control={
+                        <Checkbox
+                          checked={formData.body_discomfort.includes(part)}
+                          onChange={() => handleCheckboxChange("body_discomfort", part)}
+                          sx={{ color: "#FFD700", "&.Mui-checked": { color: "#FFD700" } }}
+                        />
+                      }
+                      label={<span style={{ color: "#FFD700", fontSize: "14px" }}>{part}</span>}
+                    />
+                  ))}
+                </FormGroup>
+              </FormControl>
+              
+              <TextField
+                name="health_info"
+                label="补充说明"
+                multiline
+                rows={2}
+                value={formData.health_info}
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                placeholder="其他需要说明的健康情况..."
+                InputProps={{
+                  sx: {
+                    color: "#000",
+                    backgroundColor: "#FFD700",
+                    borderRadius: 2,
+                    fontSize: 16,
+                  },
+                }}
+                InputLabelProps={{
+                  sx: {
+                    color: "#000",
+                    fontWeight: "bold",
+                    "&.MuiInputLabel-shrink": {
+                      backgroundColor: "#FFD700",
+                      color: "#000",
+                      px: 0.5,
+                      borderRadius: 1,
+                      zIndex: 1,
+                    },
+                  },
+                }}
+              />
+              
               <Stack
                 direction="row"
                 spacing={2}
@@ -457,7 +847,7 @@ function ShowBasicInfo({
               <LoadingSpinner />
             </Box>
           )}
-                  {getFortuneTellingUserInfoError && (
+          {getFortuneTellingUserInfoError && (
           <Alert severity="error">
             {getFortuneTellingUserInfoError?.message || 
              getFortuneTellingUserInfoError?.toString() || 
@@ -524,6 +914,161 @@ function ShowBasicInfo({
                     {fortuneTellingUserInfo.birth_time} {chineseTraditionalTime}
                   </Typography>
                 </Stack>
+                {fortuneTellingUserInfo.height && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-title"]}
+                      sx={{ fontWeight: 600, color: "#1A237E" }}
+                    >
+                      身高：
+                    </Typography>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-value"]}
+                    >
+                      {fortuneTellingUserInfo.height}米
+                    </Typography>
+                  </Stack>
+                )}
+                {fortuneTellingUserInfo.weight && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-title"]}
+                      sx={{ fontWeight: 600, color: "#1A237E" }}
+                    >
+                      体重：
+                    </Typography>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-value"]}
+                    >
+                      {fortuneTellingUserInfo.weight}公斤
+                    </Typography>
+                  </Stack>
+                )}
+                {fortuneTellingUserInfo.profession && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-title"]}
+                      sx={{ fontWeight: 600, color: "#1A237E" }}
+                    >
+                      职业：
+                    </Typography>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-value"]}
+                    >
+                      {fortuneTellingUserInfo.profession}
+                    </Typography>
+                  </Stack>
+                )}
+                {fortuneTellingUserInfo.constitution_type && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-title"]}
+                      sx={{ fontWeight: 600, color: "#1A237E" }}
+                    >
+                      体质：
+                    </Typography>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-value"]}
+                    >
+                      {fortuneTellingUserInfo.constitution_type_label || fortuneTellingUserInfo.constitution_type}
+                    </Typography>
+                  </Stack>
+                )}
+                {fortuneTellingUserInfo.sleep_quality && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-title"]}
+                      sx={{ fontWeight: 600, color: "#1A237E" }}
+                    >
+                      睡眠：
+                    </Typography>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-value"]}
+                    >
+                      {fortuneTellingUserInfo.sleep_quality_label || fortuneTellingUserInfo.sleep_quality}
+                    </Typography>
+                  </Stack>
+                )}
+                {fortuneTellingUserInfo.exercise_frequency && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-title"]}
+                      sx={{ fontWeight: 600, color: "#1A237E" }}
+                    >
+                      运动：
+                    </Typography>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-value"]}
+                    >
+                      {fortuneTellingUserInfo.exercise_frequency_label || fortuneTellingUserInfo.exercise_frequency}
+                    </Typography>
+                  </Stack>
+                )}
+                {fortuneTellingUserInfo.common_symptoms && fortuneTellingUserInfo.common_symptoms.length > 0 && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-title"]}
+                      sx={{ fontWeight: 600, color: "#1A237E" }}
+                    >
+                      症状：
+                    </Typography>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-value"]}
+                    >
+                      {fortuneTellingUserInfo.common_symptoms.join(", ")}
+                    </Typography>
+                  </Stack>
+                )}
+                {fortuneTellingUserInfo.dietary_preferences && fortuneTellingUserInfo.dietary_preferences.length > 0 && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-title"]}
+                      sx={{ fontWeight: 600, color: "#1A237E" }}
+                    >
+                      饮食：
+                    </Typography>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-value"]}
+                    >
+                      {fortuneTellingUserInfo.dietary_preferences.join(", ")}
+                    </Typography>
+                  </Stack>
+                )}
+                {fortuneTellingUserInfo.body_discomfort && fortuneTellingUserInfo.body_discomfort.length > 0 && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-title"]}
+                      sx={{ fontWeight: 600, color: "#1A237E" }}
+                    >
+                      不适：
+                    </Typography>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-value"]}
+                    >
+                      {fortuneTellingUserInfo.body_discomfort.join(", ")}
+                    </Typography>
+                  </Stack>
+                )}
+                {fortuneTellingUserInfo.health_info && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-title"]}
+                      sx={{ fontWeight: 600, color: "#1A237E" }}
+                    >
+                      补充：
+                    </Typography>
+                    <Typography
+                      className={fortuneTellingUidStyles["user-info-value"]}
+                      sx={{ 
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word",
+                        maxWidth: "200px"
+                      }}
+                    >
+                      {fortuneTellingUserInfo.health_info}
+                    </Typography>
+                  </Stack>
+                )}
               </Stack>
             )}
         </CardContent>
@@ -642,9 +1187,38 @@ function FortuneTellingView({
   );
 }
 
-
-
 function LinkMe({ fortune_telling_uid }) {
+  // 通过 url获取 uids参数, 如果uids参数存在，则使用uids参数，否则使用 fortune_telling_uid
+  const { uids } = useRouter().query;
+  const uidsArray = uids ? uids.split(",") : [fortune_telling_uid];
+
+  return (
+    <>
+      {uidsArray.length === 1 && (
+        <LinkMeContent fortune_telling_uid={uidsArray[0]} />
+      )}
+      {uidsArray.length > 1 && (
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', md: 'row' }, 
+            gap: 0, 
+            height: '100vh' 
+          }}
+        >
+          {uidsArray.map((uid) => (
+            <Box sx={{ flex: 1, overflowY: 'auto', border: '1px solid #ccc', borderRadius: '10px' }}>
+              <LinkMeContent fortune_telling_uid={uid} />
+            </Box>
+          ))}
+        </Box>
+      )}
+    </>
+
+  );
+}
+
+function LinkMeContent({ fortune_telling_uid }) {
   // 使用状态来存储请求结果
   const [fortuneData, setFortuneData] = useState(null);
   const [loading, setLoading] = useState(false);

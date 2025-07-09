@@ -174,6 +174,241 @@
   color: #FFD602;
   background-color: #1A237E;
 }
+/* 添加表格边框 */
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #FFD700;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+/* 表头样式 */
+.markdown-content table thead {
+  background: linear-gradient(135deg, #FFD700, #FFC300);
+  color: #000;
+  font-weight: bold;
+  position: relative;
+}
+
+.markdown-content table thead::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #B8860B, transparent);
+}
+
+.markdown-content table th {
+  padding: 16px 20px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border-right: 1px solid rgba(184, 134, 11, 0.3);
+  position: relative;
+}
+
+.markdown-content table th:last-child {
+  border-right: none;
+}
+
+/* 表格单元格样式 */
+.markdown-content table td {
+  padding: 14px 20px;
+  border-right: 1px solid rgba(255, 215, 0, 0.2);
+  color: #FFD700;
+  font-size: 15px;
+  line-height: 1.6;
+  transition: all 0.3s ease;
+}
+
+.markdown-content table td:last-child {
+  border-right: none;
+}
+
+/* 隔行阴影（斑马纹） */
+.markdown-content table tbody tr:nth-child(even) {
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.markdown-content table tbody tr:nth-child(odd) {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* 鼠标悬浮行样式 */
+.markdown-content table tbody tr:hover {
+  background: linear-gradient(90deg, 
+    rgba(255, 215, 0, 0.15), 
+    rgba(255, 215, 0, 0.25), 
+    rgba(255, 215, 0, 0.15)
+  );
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
+  cursor: pointer;
+}
+
+.markdown-content table tbody tr:hover td {
+  color: #FFF;
+  text-shadow: 0 1px 4px rgba(255, 215, 0, 0.6);
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+/* 表格内emoji样式 */
+.markdown-content table td:first-child {
+  text-align: center;
+  font-size: 18px;
+  min-width: 80px;
+}
+
+/* 特殊内容样式 */
+.markdown-content table strong {
+  color: #FFD700;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .markdown-content table {
+    font-size: 14px;
+    margin: 15px 0;
+  }
+  
+  .markdown-content table th,
+  .markdown-content table td {
+    padding: 12px 15px;
+  }
+  
+  .markdown-content table th {
+    font-size: 15px;
+  }
+  
+  .markdown-content table td {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .markdown-content table {
+    font-size: 13px;
+    border-radius: 8px;
+  }
+  
+  .markdown-content table th,
+  .markdown-content table td {
+    padding: 10px 12px;
+  }
+  
+  .markdown-content table tbody tr:hover {
+    transform: none;
+  }
+}
+
+
+/* 健康咨询父容器样式 - 完全透明 */
+.markdown-content :global(.health-advice) {
+  text-align: left;
+  padding: 0;
+  background: transparent;
+  margin: 10px;
+}
+
+
+
+/* 健康咨询子项目样式 - 经典黑金配色 */
+.markdown-content :global(.health-advice-item) {
+  display: block;
+  width: 100%;
+  padding: 20px 24px;
+  /* margin: 4px 0; */
+  font-size: 1.3em;
+  line-height: 1.8;
+  background: #2A2A2A;
+  border: 1px solid #3A3A3A;
+  /* border-radius: 8px; */
+  transition: all 0.3s ease;
+  font-weight: 500;
+  
+  /* 经典金色文字 */
+  color: #FFD700;
+}
+
+
+
+.markdown-content :global(.health-advice-item):hover {
+  background: #3A3A3A;
+  border-color: #FFD700;
+  color: #FFED4A;
+}
+
+
+
+/* 统一的经典黑金配色 */
+.markdown-content :global(.health-advice-item):nth-child(1),
+.markdown-content :global(.health-advice-item):nth-child(2),
+.markdown-content :global(.health-advice-item):nth-child(3),
+.markdown-content :global(.health-advice-item):nth-child(n+4) {
+  background: #2A2A2A;
+  border-color: #3A3A3A;
+}
+
+.markdown-content :global(.health-summary) {
+  margin: 10px;
+  font-size: 1.2em;
+  line-height: 1.8;
+
+  border: 1px solid #3A3A3A;
+  padding: 20px 24px;
+  font-weight: 500;
+}
+
+
+
+
+
+/* 第一个和最后一个元素无额外间距 */
+.markdown-content :global(.health-advice-item):first-child {
+  margin-top: 4px;
+}
+
+.markdown-content :global(.health-advice-item):last-child {
+  margin-bottom: 4px;
+}
+
+
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .markdown-content :global(.health-advice) {
+    margin: 15px 0;
+  }
+  
+  .markdown-content :global(.health-advice-item) {
+    padding: 18px 20px;
+    font-size: 1.2em;
+    margin: 3px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .markdown-content :global(.health-advice) {
+    margin: 10px 0;
+  }
+  
+  .markdown-content :global(.health-advice-item) {
+    padding: 16px 18px;
+    font-size: 1.1em;
+    margin: 2px 0;
+  }
+}
 
 .markdown-content :global(.fortune-yi) {
   /* 绿色 */
