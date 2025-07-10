@@ -399,6 +399,7 @@ export interface ApiAnythingResponseAnythingResponse
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    user_updated_at: Schema.Attribute.DateTime;
   };
 }
 
@@ -439,6 +440,18 @@ export interface ApiFortuneTellingUserFortuneTellingUser
     exercise_frequency: Schema.Attribute.Enumeration<
       ['daily', 'frequent', 'occasional', 'rarely', 'never']
     >;
+    fortune_sections: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<
+        [
+          'prophecy',
+          'health_advice',
+          'fortune_analysis',
+          'traditional_calendar',
+          'prophecy_explanation',
+          'feng_shui_decoration',
+          'daily_tips',
+        ]
+      >;
     fortune_telling_uid: Schema.Attribute.UID;
     gender: Schema.Attribute.Enumeration<['male', 'female']>;
     health_info: Schema.Attribute.Text;

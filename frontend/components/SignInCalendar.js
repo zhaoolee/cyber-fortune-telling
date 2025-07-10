@@ -5,6 +5,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import moment from 'moment';
 
+// API 配置
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:11337";
+const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || "";
+
 // Helper to get all days in current month
 function getMonthDays(year, month) {
   const days = [];
@@ -16,7 +20,7 @@ function getMonthDays(year, month) {
   return days;
 }
 
-export default function SignInCalendar({ fortune_telling_uid, API_BASE_URL, API_TOKEN }) {
+export default function SignInCalendar({ fortune_telling_uid }) {
   const [open, setOpen] = useState(false);
   const [signInDays, setSignInDays] = useState([]); // Array of YYYY-MM-DD
   const [loading, setLoading] = useState(false);
@@ -52,7 +56,7 @@ export default function SignInCalendar({ fortune_telling_uid, API_BASE_URL, API_
     setLoading(true);
     setError(null);
     axios.get(`${API_BASE_URL}/api/sign-in/dates`, {
-      headers: { Authorization: `Bearer ${API_TOKEN}` },
+      headers: { Authorization: API_TOKEN ? `Bearer ${API_TOKEN}` : undefined },
       params: { sign_in_uid: fortune_telling_uid, year: viewYear, month: viewMonth + 1 }
     })
       .then(res => {
@@ -61,7 +65,7 @@ export default function SignInCalendar({ fortune_telling_uid, API_BASE_URL, API_
       })
       .catch(() => setError('获取签到信息失败'))
       .finally(() => setLoading(false));
-  }, [open, fortune_telling_uid, API_BASE_URL, API_TOKEN, viewYear, viewMonth]);
+  }, [open, fortune_telling_uid, viewYear, viewMonth]);
 
   // Handle sign-in
   const handleSignIn = async () => {
@@ -72,7 +76,7 @@ export default function SignInCalendar({ fortune_telling_uid, API_BASE_URL, API_
         sign_in_uid: fortune_telling_uid,
         sign_in_date: today
       }, {
-        headers: { Authorization: `Bearer ${API_TOKEN}` }
+        headers: { Authorization: API_TOKEN ? `Bearer ${API_TOKEN}` : undefined }
       });
       setSignInDays(prev => [...prev, today]);
     } catch (e) {

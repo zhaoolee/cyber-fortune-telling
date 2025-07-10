@@ -16,5 +16,15 @@ module.exports = {
         middlewares: [],
       },
     },
+    {
+      method: 'GET',
+      path: '/fortune-telling-users/fortune-sections',
+      handler: 'api::fortune-telling-user.fortune-telling-user.getFortuneSections',
+      config: {
+        auth: false,
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 }; 

@@ -416,7 +416,7 @@
 
 /* 传统药方印章效果 */
 .markdown-content :global(.health-summary)::after {
-  content: '仁';
+  content: '養';
   position: absolute;
   bottom: 10px;
   right: 15px;

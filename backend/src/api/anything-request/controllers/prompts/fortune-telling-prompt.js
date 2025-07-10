@@ -1,5 +1,20 @@
 const moment = require("moment");
 const { getEnumLabel } = require("../../../../config/enum-mappings");
+const { buildSectionsPrompt } = require("../../../../config/fortune-sections");
+
+// 默认选中的算命栏目配置
+const DEFAULT_FORTUNE_SECTIONS = [
+  "prophecy",
+  "health_advice", 
+  "fortune_analysis",
+  // "entertainment_places",
+  // "healthy_food",
+  "traditional_calendar",
+  "prophecy_explanation",
+  // 这两个是默认的
+  "feng_shui_decoration",
+  "daily_tips",
+];
 
 /**
  * Builds the fortune telling prompt based on user information
@@ -38,27 +53,22 @@ const buildFortuneTellingPrompt = (user) => {
   // 补充说明
   const userHealthInfo = user.health_info || null; // 健康信息补充说明
 
-  // 格式化信息用于显示（如果需要的话）
-  const formattedUserInfo = {
-    // 身体基本信息
-    height: userHeight ? `${userHeight}米` : '未填写',
-    weight: userWeight ? `${userWeight}公斤` : '未填写', 
-    profession: userProfession || '未填写',
-    
-    // 健康状况
-    constitutionType: userConstitutionTypeLabel || '未填写',
-    sleepQuality: userSleepQualityLabel || '未填写',
-    exerciseFrequency: userExerciseFrequencyLabel || '未填写',
-    
-    // 症状和不适
-    commonSymptoms: userCommonSymptoms.length > 0 ? userCommonSymptoms.join('、') : '无',
-    dietaryPreferences: userDietaryPreferences.length > 0 ? userDietaryPreferences.join('、') : '无特殊偏好',
-    bodyDiscomfort: userBodyDiscomfort.length > 0 ? userBodyDiscomfort.join('、') : '无',
-    
-    // 补充信息
-    healthInfo: userHealthInfo || '无补充说明'
-  };
-  return `
+  // 获取用户选择的栏目配置，如果没有则使用默认配置
+  let selectedSections = user.fortune_sections || DEFAULT_FORTUNE_SECTIONS;
+  
+  // 确保必填栏目始终包含在选择中
+  const { getRequiredFortuneSections } = require("../../../../config/fortune-sections");
+  const requiredSections = getRequiredFortuneSections();
+  const sectionsWithRequired = [...new Set([...selectedSections, ...requiredSections])];
+  
+  // 使用包含必填项的栏目列表
+  selectedSections = sectionsWithRequired;
+
+  // 使用新的插件化结构构建prompt
+  const { promptInstructions, outputFormat } = buildSectionsPrompt(selectedSections);
+
+  // 构建基础信息部分
+  const baseInfo = `
     我是${user.username}，出生信息如下：
     - 出生日期：${user.birth_date} (阳历)
     - 出生时间：${user.birth_time}
@@ -76,143 +86,18 @@ const buildFortuneTellingPrompt = (user) => {
 
     目前可用的摆件列表: ${decorString}
 
-    请给我一个100字左右的谶语小诗, 小诗对仗工整，需要包含以下内容:
-    架空的世界，玄妙的情节，不可说破的寓意；如果需要解谶语小故事，语气像街头算命的道长，不要完全说破，给用户留有想象空间
-
-    请根据我的八字流年和塔罗牌，推算出今天的运势，分析内容包括以下几个方面：
-    1. 事业与工作
-    2. 财运
-    3. 感情与人际
-    4. 健康
-    5. 幸运色
-    6. 摆件
-
-    请用资深中医的语气，结合中医理论（如阴阳五行、脏腑经络、辨证论治等），用温和、专业、富有文化底蕴的语言，引用一些道德经名言，总结健康建议，并输出到 health-summary 部分
-
-    最后根据已输出内容内容, 总结12到20条tips, tips用于长时间轮播提示给用户，请尽可能涵盖已输出内容的重点信息
-
     输出文本时可以使用一些Emoji来增加趣味性，但不要过多，可以参考100个字一个Emoji
 
-    请按照以下格式输出：
+    ## 请根据以下要求输出对应的栏目内容：
 
-    ## 📜今天给${user.username}的谶语
+    ${promptInstructions}
 
-    <div class="fortune-story">
-      <div class="fortune-story-item">{谶语小诗语句}</div>
-      <div class="fortune-story-item">{谶语小诗语句}</div>
-      <div class="fortune-story-item">{谶语小诗语句}</div>
-      <div class="fortune-story-item">{谶语小诗语句}</div>
-      <div class="fortune-story-item">{谶语小诗语句}</div>
-      <div class="fortune-story-item">{谶语小诗语句}</div>
-      <div class="fortune-story-item">{谶语小诗语句}</div>
-      <div class="fortune-story-item">{谶语小诗语句}</div>
-    </div>
+    ## 请按照以下格式输出相应的栏目：
 
-
-    ## 🌿今日中医养生健康建议:
-
-    <div class="health-advice">
-      <div class="health-advice-item">{健康建议}</div>
-      <div class="health-advice-item">{健康建议}</div>
-      <div class="health-advice-item">{健康建议}</div>
-      <div class="health-advice-item">{健康建议}</div>
-      <div class="health-advice-item">{健康建议}</div>
-      <div class="health-advice-item">{健康建议}</div>
-      <div class="health-advice-item">{健康建议}</div>
-      <div class="health-advice-item">{健康建议}</div>
-    </div>
-
-    <div class="health-summary">
-      {健康建议总结}
-    </div>
-
-
-    ## 🍀八字与流年分析 ${user.username}今日${currentDate}具体运势分析：
-    - 事业与工作：
-    - 财运：
-    - 感情与人际：
-    - 健康：
-
-
-    ## 🍭幸运色分析
-
-    <div class="lucky-color" style="color: {颜色值}">{颜色描述信息}</div>
-
-    ## 🔢今日幸运数字
-
-    <div class="lucky-number">{数字描述信息}</div>
-
-    ## 💬基于以上分析,今日适合交流的人物:
-
-    1.
-    2.
-    3.
-
-    ## 💏今天脱单适合去哪里
-
-    <div class="dating-place">{地点描述信息}</div>
-    <div class="dating-place">{地点描述信息}</div>
-    <div class="dating-place">{地点描述信息}</div>
-
-    ## 🤠今天适合去哪里玩
-
-    <div class="play-place">{地点描述信息}</div>
-    <div class="dating-place">{地点描述信息}</div>
-    <div class="dating-place">{地点描述信息}</div>
-
-    ## 🍽️为了长寿,今天适合吃什么
-
-    <div class="food">{食物描述信息}</div>
-    <div class="food">{食物描述信息}</div>
-    <div class="food">{食物描述信息}</div>
-
-    ## 🗓️传统黄历
-
-    ### 📅 ${currentDate} 黄历精要
-
-    | 项目 | 内容 |
-    |:----:|:-----|
-    | 🌟 **五行** | {当日五行属性} |
-    | 🙏 **值神** | {当日值神} |
-    | ⚡ **冲煞** | {冲煞信息} |
-    | 💰 **财神** | {财神方位} |
-    | 😊 **喜神** | {喜神方位} |
-    | 🍀 **福神** | {福神方位} |
-
-    ### ⏰ 重要时辰
-
-    | 时辰 | 时间 | 运势 |
-    |:----:|:----:|:-----|
-    | 🌅 **卯时** | 05-07时 | {卯时运势简述} |
-    | ☀️ **巳时** | 09-11时 | {巳时运势简述} |
-    | 🌞 **午时** | 11-13时 | {午时运势简述} |
-    | 🌆 **酉时** | 17-19时 | {酉时运势简述} |
-
-    ---
-
-    ### 📝 今日宜忌
-
-    <div class="fortune-yi">宜：{今日宜做的事情}</div>
-    <div class="fortune-ji">忌：{今日忌做的事情}</div>
-
-  
-
-    ## 🪆基于以上分析, 今天适合在桌面摆放的一个摆件为{摆件名}:
-     <img class="desk-decor" src="/api/random-desk-decor?keyword={摆件名}" />
-    
-    ## 💡解谶语小故事
-
-    <div class="fortune-story-explanation">{谶语小故事解释}</div>
-
-    ## 🎯总结
-
-    ## 基于以上内容, 总结今日tips信息:
-
-    <div class="fortune-tip">{tip信息}</div>
-
-
-    
+    ${outputFormat}
   `;
+
+  return baseInfo;
 };
 
 module.exports = {

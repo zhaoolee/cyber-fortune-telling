@@ -94,6 +94,19 @@
     "health_info": {
       "type": "text",
       "required": false
+    },
+    "fortune_sections": {
+      "type": "json",
+      "required": false,
+      "default": [
+        "prophecy",
+        "health_advice",
+        "fortune_analysis",
+        "traditional_calendar",
+        "prophecy_explanation",
+        "feng_shui_decoration",
+        "daily_tips"
+      ]
     }
   }
 }
