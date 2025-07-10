@@ -22,6 +22,10 @@
     },
     "conversation_history": {
       "type": "json"
+    },
+    "user_updated_at": {
+      "type": "datetime",
+      "required": false
     }
   }
 }

@@ -23,6 +23,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: fortune-telling-backend:${VERSION:-latest}
     container_name: fortune-telling-backend
     restart: unless-stopped
     environment:
@@ -67,6 +68,7 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+    image: fortune-telling-frontend:${VERSION:-latest}
     container_name: fortune-telling-frontend
     restart: unless-stopped
     environment:

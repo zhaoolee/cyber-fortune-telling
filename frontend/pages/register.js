@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Card,
@@ -7,12 +7,9 @@ import {
   Box,
   Container,
   Stack,
-  Input,
-  Select,
-  MenuItem,
+  TextField,
   Button,
   Alert,
-  TextField,
   RadioGroup,
   FormControlLabel,
   Radio,
@@ -53,6 +50,12 @@ export default function Register() {
   const [error, setError] = useState(null);
   const router = useRouter();
 
+  // 检查必填字段是否都已填写
+  const isFormValid = formData.username.trim() !== '' && 
+                     formData.gender !== '' && 
+                     formData.birth_date !== '' && 
+                     formData.birth_time !== '';
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -65,14 +68,16 @@ export default function Register() {
     setError(null);
     try {
       const fortune_telling_uid = `uid-${Date.now()}-${Math.floor(Math.random()*10000)}`;
+      const submitData = {
+        ...formData,
+        birth_time: formatBirthTime(formData.birth_time),
+        fortune_telling_uid,
+      };
+      
       await axios.post(
         `${API_BASE_URL}/api/fortune-telling-users`,
         {
-          data: {
-            ...formData,
-            birth_time: formatBirthTime(formData.birth_time),
-            fortune_telling_uid,
-          },
+          data: submitData,
         },
         {
           headers: {
@@ -81,7 +86,12 @@ export default function Register() {
         }
       );
       setSuccess("注册成功！");
-      setFormData({ username: "", gender: "", birth_date: "", birth_time: "" });
+      setFormData({ 
+        username: "", 
+        gender: "", 
+        birth_date: "", 
+        birth_time: "", 
+      });
       router.push(`/linkMe/${fortune_telling_uid}`);
     } catch (err) {
       setError("注册失败，请重试。");
@@ -245,34 +255,56 @@ export default function Register() {
                     },
                   }}
                 />
+                
+                {/* 必填字段提示 */}
+                {!isFormValid && (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "#FFD700",
+                      textAlign: "center",
+                      mt: 2,
+                      opacity: 0.8,
+                      fontStyle: "italic",
+                    }}
+                  >
+                    请完成以下必填信息：
+                    {!formData.username.trim() && " 用户名"}
+                    {!formData.gender && " 性别"}
+                    {!formData.birth_date && " 出生日期"}
+                    {!formData.birth_time && " 出生时间"}
+                  </Typography>
+                )}
+                
                 <Button
                   type="submit"
                   variant="contained"
                   color="primary"
-                  disabled={loading}
+                  disabled={loading || !isFormValid}
                   sx={{
                     fontWeight: "bold",
-                    backgroundColor: "#FFD700",
-                    color: "#000",
-                    border: '2px solid #FFD700',
+                    backgroundColor: isFormValid ? "#FFD700" : "#666",
+                    color: isFormValid ? "#000" : "#999",
+                    border: `2px solid ${isFormValid ? "#FFD700" : "#666"}`,
                     borderRadius: 2,
                     height: 56,
                     fontSize: 18,
                     mt: 1,
+                    transition: 'all 0.3s ease',
                     '&:hover': {
-                      backgroundColor: '#FFC300',
-                      color: '#000',
-                      border: '2px solid #FFD700',
+                      backgroundColor: isFormValid ? '#FFC300' : '#666',
+                      color: isFormValid ? '#000' : '#999',
+                      border: `2px solid ${isFormValid ? "#FFD700" : "#666"}`,
                     },
                     '&.Mui-disabled': {
-                      backgroundColor: '#FFD700',
-                      color: '#333',
-                      opacity: 0.7,
-                      border: '2px solid #FFD700',
+                      backgroundColor: isFormValid ? '#FFD700' : '#666',
+                      color: isFormValid ? '#333' : '#999',
+                      opacity: isFormValid ? 0.7 : 0.5,
+                      border: `2px solid ${isFormValid ? "#FFD700" : "#666"}`,
                     },
                   }}
                 >
-                  {loading ? "注册中..." : "注册"}
+                  {loading ? "注册中..." : isFormValid ? "注册" : "请填写完整信息"}
                 </Button>
                 {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
                 {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
