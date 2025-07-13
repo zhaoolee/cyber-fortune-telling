@@ -22,6 +22,7 @@
 
 于是，我打算搞一个**电子风水摆件**，录入自己的八字信息，每天自动调用满血版DeepSeek，计算今天最适合的风水摆件，并通过**屏幕展示在桌面上**。为了避免过于单调，还可以让Deepseek大模型把**今天中午适合吃什么**，今天**适合联系哪些朋友**，今天**幸运数字是什么**，今天的**幸运色是什么**，变成**一个个小建议轮播**到屏幕上！
 
+
 ## 在线体验
 
 在线体验地址 [https://ft.fangyuanxiaozhan.com/register](https://ft.fangyuanxiaozhan.com/register)
@@ -112,6 +113,44 @@
 
 
 ![pi5](https://cdn.fangyuanxiaozhan.com/assets/1746849238609ZsZFGCYQ.jpeg)
+
+
+## 支持 MCP调用
+
+
+### 生成docker镜像
+```
+cd mcp-server
+npm run docker:build
+```
+
+### 支持 MCP调用 
+
+客户端推荐使用 [ChatBox](https://github.com/chatboxai/chatbox)
+
+```
+{
+  "mcpServers": {
+    "cyber-fortune-telling-mcp-docker": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "--network", "host",
+        "-e", "CYBER_FORTUNE_API_BASE_URL=http://localhost:11337/api",
+        "-e", "LOG_LEVEL=info",
+        "cyber-fortune-mcp-server"
+      ],
+      "env": {}
+    }
+  }
+} 
+```
+
+![参数查看](https://cdn.fangyuanxiaozhan.com/assets/1752393590883peRC28BZ.jpeg)
+
+
+![请求结果](https://cdn.fangyuanxiaozhan.com/assets/1752393590897iyD0KQpa.jpeg)
+
 
 ## 后续计划，搞个更酷的电子潮玩版本
 
