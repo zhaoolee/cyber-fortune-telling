@@ -25,6 +25,8 @@ RUN npm config set registry https://registry.npmmirror.com/
 # 复制 package.json 和 package-lock.json
 COPY package*.json ./
 
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS="1"
+ENV npm_config_sharp_libvips_binary_host="https://registry.npmmirror.com/-/binary/sharp-libvips"
 # 安装依赖（包括开发依赖，因为构建需要）
 RUN npm install --verbose
 
