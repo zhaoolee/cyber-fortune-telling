@@ -10,7 +10,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
-
+import useFortuneTellingStore from "@/stores/fortuneTellingStore";
+import moment from "moment";
 // DualTime 组件
 function DualTimeComponent({ desktopDecoration, tips, currentTip, animationKey }) {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -584,6 +585,10 @@ function SpiritualPracticeView({
   desktopDecoration,
   setSpiritualPractice,
 }) {
+
+   const {
+    fortuneTellingUserInfo,
+  } = useFortuneTellingStore();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [viewMode, setViewMode] = useState(() => {
     // 从 localStorage 读取保存的模式，如果没有则使用 'dualtime' 作为默认值
@@ -595,6 +600,32 @@ function SpiritualPracticeView({
     return 'dualtime';
   });
   const [showMenu, setShowMenu] = useState(false);
+
+  const allWeeks = 90 * 52; // 假设活到90岁，每年52周
+  const [weeksLeft, setWeeksLeft] = useState(null);
+  const [weeksLived, setWeeksLived] = useState(null);
+  
+  useEffect(() => {
+
+    console.log('fortuneTellingUserInfo changed:', fortuneTellingUserInfo);
+    // get birthday by fortuneTellingUserInfo , and calculate if a people live to 90 years, how many weeks left
+    if (fortuneTellingUserInfo && fortuneTellingUserInfo.birth_date) {
+      const birthday = moment(fortuneTellingUserInfo.birth_date, 'YYYY-MM-DD');
+      const now = moment();
+      const age = now.year() - birthday.year();
+      const weeksLived = age * 52 + Math.floor(now.diff(birthday.clone().year(now.year()), 'weeks', true));
+      const weeksLeft = allWeeks - weeksLived;
+      setWeeksLeft(weeksLeft > 0 ? weeksLeft : 0);
+      setWeeksLived(weeksLived > 0 ? weeksLived : 0);
+    } else {
+      setWeeksLeft(null);
+      setWeeksLived(null);
+    }
+
+
+
+  }, [fortuneTellingUserInfo]);
+
 
   // 切换模式并保存到 localStorage
   const handleViewModeChange = (newMode) => {
@@ -623,6 +654,112 @@ function SpiritualPracticeView({
         backgroundPosition: "center",
       }}
     >
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 0, // 确保遮罩在内容后面,
+      }}>
+        <div>
+          {/* Canvas-based life weeks grid - much more performant */}
+          <div style={{
+            position: 'absolute',
+            left : 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.01)',
+            zIndex: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '10px',
+            overflow: 'auto',
+            opacity: 0.4
+          }}>
+            {weeksLived !== null && weeksLeft !== null && (
+              <canvas
+                ref={(canvas) => {
+                  if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    const width = canvas.width;
+                    const height = canvas.height;
+
+                    // Clear canvas
+                    ctx.clearRect(0, 0, width, height);
+
+                    // Calculate grid dimensions
+                    const cols = 52;
+                    const rows = 90;
+                    const cellWidth = width / cols;
+                    const cellHeight = height / rows;
+
+                    // Draw grid cells
+                    for (let row = 0; row < rows; row++) {
+                      for (let col = 0; col < cols; col++) {
+                        const index = row * cols + col;
+                        const isLived = index < weeksLived;
+                        const isLeft = index >= weeksLived && index < weeksLived + weeksLeft;
+
+                        if (isLived || isLeft) {
+                          ctx.fillStyle = isLived ? '#CCCCCC' : '#FFD700';
+                          ctx.globalAlpha = 0.5;
+                          ctx.fillRect(
+                            col * cellWidth + 0.5,
+                            row * cellHeight + 0.5,
+                            cellWidth - 1,
+                            cellHeight - 1
+                          );
+                          ctx.globalAlpha = 1;
+                        } else {
+                          // Draw border for future weeks
+                          ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                          ctx.lineWidth = 1;
+                          ctx.strokeRect(
+                            col * cellWidth + 0.5,
+                            row * cellHeight + 0.5,
+                            cellWidth - 1,
+                            cellHeight - 1
+                          );
+                        }
+                      }
+                    }
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  aspectRatio: '52 / 90'
+                }}
+                width={520}
+                height={900}
+                title={`Life Grid: ${weeksLived} weeks lived, ${weeksLeft} weeks left`}
+              />
+            )}
+          </div>
+        </div>
+        <div style={{
+          height: '40px',
+          position: 'absolute',
+          bottom: '10px',
+          left: 0,
+          right: 0,
+          textAlign: 'center',
+          color: '#FFD700',
+          fontSize: '14px',
+          fontWeight: 'bold',
+          textShadow: '0 0 5px rgba(255, 215, 0, 0.5)',
+          zIndex: 1, // 确保文字在遮罩前面
+        }}>     
+          如果我能活到90岁; 一共能活 {allWeeks} 周，剩余 {weeksLeft} 周，已度过 {weeksLived} 周
+        </div>
+
+        
+      </div>
       {/* 左侧菜单 */}
       {!isFullScreen && (
         <>
@@ -768,7 +905,7 @@ function SpiritualPracticeView({
       {/* 主要内容区域 */}
       {viewMode === 'easy' ? (
         <>
-                      {/* 简单模式：显示提示文本 */}
+          {/* 简单模式：显示提示文本 */}
           {tips.length > 0 && (
             <motion.div
               key={animationKey}
@@ -815,6 +952,7 @@ function SpiritualPracticeView({
           {desktopDecoration && (
             <motion.div
               style={{
+                zIndex: 1, 
                 filter: "drop-shadow(0 0 20px rgba(255, 215, 0, 0.5))",
               }}
               animate={{
@@ -893,6 +1031,8 @@ function SpiritualPracticeView({
           }} />
         </IconButton>
       )}
+
+      
     </Box>
   );
 }
