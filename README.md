@@ -240,8 +240,8 @@ docker compose -f ./docker-compose-no-database.yml up -d
 ## 🛠️ 技术栈
 
 ### 前端
-- **Next.js 15.1.7** - React 框架
-- **React 19.0.0** - JavaScript 库
+- **Next.js 15.1.9** - React 框架
+- **React 19.0.1** - JavaScript 库
 - **Material-UI 7.1.0** - UI 组件库 (@mui/material)
 - **Framer Motion 12.9.4** - 动画库
 - **Axios 1.7.9** - HTTP 客户端
