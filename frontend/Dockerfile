@@ -21,15 +21,15 @@ RUN apt-get update && apt-get install -y \
 # 设置npm使用淘宝镜像源
 RUN npm config set registry https://registry.npmmirror.com/
 # 安装 pnpm
-RUN npm install -g pnpm
+RUN npm install -g pnpm@9.15.9
 # 设置npm使用淘宝镜像源
 RUN pnpm config set registry https://registry.npmmirror.com/
 
-# 复制 package.json 
-COPY package.json ./
+# 复制依赖清单
+COPY package.json pnpm-lock.yaml ./
 
 # 安装依赖
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 # 复制源代码
 COPY . .
