@@ -16,7 +16,7 @@ console.log('🧪 Testing Cyber Fortune Telling MCP Server...\n');
 
 // Test configuration
 const TEST_CONFIG = {
-  API_BASE_URL: process.env.CYBER_FORTUNE_API_BASE_URL || 'http://localhost:11337/api',
+  API_BASE_URL: process.env.CYBER_FORTUNE_API_BASE_URL || 'http://localhost:4000/api',
   TEST_USER_ID: 'zhaoolee',
   TEST_DATE: '2025-07-13'
 };
@@ -126,10 +126,10 @@ async function runTests() {
     try {
       console.log(`⏳ Running test: ${test.name}`);
       const startTime = Date.now();
-      
+
       const responses = await sendMCPRequest(test.request);
       const endTime = Date.now();
-      
+
       if (responses.length > 0) {
         console.log(`✅ ${test.name} - Success (${endTime - startTime}ms)`);
         console.log(`Response:`, JSON.stringify(responses[0], null, 2));
@@ -153,4 +153,4 @@ async function runTests() {
 runTests().catch((error) => {
   console.error('Fatal error in tests:', error);
   process.exit(1);
-}); 
+});

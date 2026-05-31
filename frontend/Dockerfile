@@ -36,8 +36,10 @@ COPY . .
 
 # 定义构建时参数
 ARG NEXT_PUBLIC_API_BASE_URL
+ARG BACKEND_INTERNAL_URL=http://backend:11337
 # 将构建时参数转换为环境变量
 ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+ENV BACKEND_INTERNAL_URL=${BACKEND_INTERNAL_URL}
 
 # 构建 Next.js 应用
 RUN pnpm run build
@@ -47,4 +49,3 @@ EXPOSE 4000
 
 # 启动生产服务器
 CMD ["pnpm", "run", "start"]
-

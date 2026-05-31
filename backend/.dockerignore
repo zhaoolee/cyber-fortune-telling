@@ -1,0 +1,13 @@
+.env
+.env.*
+.tmp
+build
+dist
+exports
+.strapi
+node_modules
+npm-debug.log*
+*.log
+public/uploads/*
+!public/uploads/.gitkeep
+.DS_Store

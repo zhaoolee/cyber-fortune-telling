@@ -80,6 +80,8 @@ Thumbs.db
 
 # Docker
 .dockerignore
+!backend/.dockerignore
+!frontend/.dockerignore
 
 # Strapi specific
 backend/.tmp/
@@ -102,6 +104,7 @@ nginx/ssl/
 *.key
 
 # Backup files
+backups/
 backup_*.sql
 backup_*.tar.gz
 *.bak
@@ -191,4 +194,4 @@ config.local.json
 .eslintcache
 .stylelintcache
 .parcel-cache/
-.nx/ 
+.nx/

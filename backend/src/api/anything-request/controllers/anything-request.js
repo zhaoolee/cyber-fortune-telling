@@ -11,6 +11,7 @@ const moment = require("moment");
 const OpenAI = require("openai");
 const { buildFortuneTellingPrompt } = require("./prompts/fortune-telling-prompt");
 const { v4: uuid } = require('uuid');
+const STREAM_CHUNK_DELAY_MS = Number(process.env.STREAM_CHUNK_DELAY_MS || 0);
 /**
  * Delays execution for a specified number of milliseconds
  * @param {number} ms - Number of milliseconds to delay
@@ -70,6 +71,7 @@ const setupSSEHeaders = (res) => {
     'Connection': 'keep-alive',
     'X-Accel-Buffering': 'no'
   });
+  res.flushHeaders?.();
 };
 
 module.exports = {
@@ -146,7 +148,9 @@ module.exports = {
         for (let i = 0; i < content.length; i += chunkSize) {
           const chunk = content.slice(i, i + chunkSize);
           ctx.res.write(`data: ${JSON.stringify({ content: chunk })}\n\n`);
-          await delay(100); // 添加0.1秒延迟
+          if (STREAM_CHUNK_DELAY_MS > 0) {
+            await delay(STREAM_CHUNK_DELAY_MS);
+          }
         }
         ctx.res.write('data: [DONE]\n\n');
         ctx.res.end();
@@ -183,7 +187,9 @@ module.exports = {
             fullResponse += content;
             // console.log('Streaming chunk:', content);
             ctx.res.write(`data: ${JSON.stringify({ content })}\n\n`);
-            await delay(100); // 添加0.1秒延迟
+            if (STREAM_CHUNK_DELAY_MS > 0) {
+              await delay(STREAM_CHUNK_DELAY_MS);
+            }
           }
         }
       } else {
@@ -192,7 +198,9 @@ module.exports = {
         for await (const chunk of client.chatbot.stream(client.input)) {
           fullResponse += chunk;
           ctx.res.write(`data: ${JSON.stringify({ content: chunk })}\n\n`);
-          await delay(100); // 添加0.1秒延迟
+          if (STREAM_CHUNK_DELAY_MS > 0) {
+            await delay(STREAM_CHUNK_DELAY_MS);
+          }
         }
       }
       
@@ -387,7 +395,9 @@ module.exports = {
               ctx.res.write(`data: ${JSON.stringify({ content })}\n\n`);
               fullResponse += content;
               // console.log("fullResponse", fullResponse);
-              await delay(100); // 添加0.1秒延迟
+              if (STREAM_CHUNK_DELAY_MS > 0) {
+                await delay(STREAM_CHUNK_DELAY_MS);
+              }
             }
           }
   

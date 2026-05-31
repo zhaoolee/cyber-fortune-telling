@@ -8,11 +8,11 @@ const theme = createTheme({
       contrastText: '#2C1B47',
     },
     secondary: {
-      main: '#1A237E', // 深蓝色作为次要色调
+      main: '#622a1d', // 深蓝色作为次要色调
       dark: '#2A1B47',
     },
     background: {
-      default: '#1A237E',
+      default: '#622a1d',
       paper: '#F5F3E8', // 卡片背景色
     },
     text: {

@@ -1,10 +1,10 @@
 .birth-time, .birth_date {
-  background-color: #1a237e;
-  color: #1a237e;
+  background-color: #622a1d;
+  color: #622a1d;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
   border-radius: 4px;
-  border: 1px solid #1a237e;
+  border: 1px solid #622a1d;
   font-weight: bold;
 }
 
@@ -13,7 +13,7 @@
 .birth_date:hover,
 .birth_date:active {
   color: #ffd602;
-  background-color: #1a237e;
+  background-color: #622a1d;
   font-weight: bold;
 }
 

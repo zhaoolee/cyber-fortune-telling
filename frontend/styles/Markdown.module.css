@@ -14,13 +14,13 @@
   margin-bottom: 16px;
   font-weight: 600;
   line-height: 1.25;
-  color: #1A237E;
+  color: #622a1d;
 }
 
 .markdown-content h3 {
   font-size: 1.5em;
   padding-bottom: 0.3em;
-  border-bottom: 1px solid #1A237E;
+  border-bottom: 1px solid #622a1d;
 }
 
 .markdown-content p {
@@ -30,21 +30,21 @@
 
 .markdown-content strong {
   font-weight: 600;
-  color: #1A237E;
+  color: #622a1d;
 }
 
 .markdown-content hr {
   height: 0.25em;
   padding: 0;
   margin: 24px 0;
-  background-color: #1A237E;
+  background-color: #622a1d;
   border: 0;
 }
 
 .markdown-content blockquote {
   padding: 0 1em;
   color: #2A1B47;
-  border-left: 0.25em solid #1A237E;
+  border-left: 0.25em solid #622a1d;
   margin: 0 0 16px 0;
 }
 
@@ -70,7 +70,7 @@
   background-color: rgba(26, 35, 126, 0.1);
   border-radius: 3px;
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-  color: #1A237E;
+  color: #622a1d;
 }
 
 .markdown-content pre {
@@ -115,7 +115,7 @@
 
 .mystical-title {
   animation: mysticalGlow 3s ease-in-out infinite;
-  color: #1A237E;
+  color: #622a1d;
   font-weight: 700;
   text-align: center;
 }
@@ -135,12 +135,12 @@
 
 /* 这是一个谜底, 用背景层和文字同色，完全不可见, 鼠标hover，活在移动端手指触摸才能查看反色的文字显示 */
 .markdown-content :global(.fortune-story-explanation) {
-  background-color: #1A237E;
-  color: #1A237E;
+  background-color: #622a1d;
+  color: #622a1d;
   cursor: pointer;
   transition: background-color 0.3s ease;
   padding: 0.5em;
-  border: 1px solid #1A237E;
+  border: 1px solid #622a1d;
   margin: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   font-size: 1.2em;
@@ -149,12 +149,12 @@
 
 .markdown-content :global(.fortune-story-explanation:hover) {
   color: #FFD602;
-  background-color: #1A237E;
+  background-color: #622a1d;
   font-size: 1.2em;
 }
 .markdown-content :global(.fortune-story-explanation:active) {
   color: #FFD602;
-  background-color: #1A237E;
+  background-color: #622a1d;
   font-size: 1.2em;
 }
 
@@ -163,7 +163,7 @@
   /* 添加一个模拟纸张容器的效果 */
   margin: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  background-color: #1A237E;
+  background-color: #622a1d;
 }
 
 .markdown-content :global(.fortune-story-item) {
@@ -172,7 +172,7 @@
   font-size: 1.2em;
   font-weight: bold;
   color: #FFD602;
-  background-color: #1A237E;
+  background-color: #622a1d;
 }
 /* 添加表格边框 */
 .markdown-content table {
@@ -331,7 +331,7 @@
   /* margin: 4px 0; */
   font-size: 1.3em;
   line-height: 1.8;
-  background: #2A2A2A;
+  background: #161823;
   border: 1px solid #3A3A3A;
   /* border-radius: 8px; */
   transition: all 0.3s ease;
@@ -356,7 +356,7 @@
 .markdown-content :global(.health-advice-item):nth-child(2),
 .markdown-content :global(.health-advice-item):nth-child(3),
 .markdown-content :global(.health-advice-item):nth-child(n+4) {
-  background: #2A2A2A;
+  background: #161823;
   border-color: #3A3A3A;
 }
 

@@ -8,7 +8,7 @@
     "start": "node src/index.js",
     "test": "node src/test.js",
     "docker:build": "docker build -t cyber-fortune-mcp-server .",
-    "docker:run": "docker run --rm -i --network host -e CYBER_FORTUNE_API_BASE_URL=http://localhost:11337/api cyber-fortune-mcp-server"
+    "docker:run": "docker run --rm -i --network host -e CYBER_FORTUNE_API_BASE_URL=http://localhost:4000/api cyber-fortune-mcp-server"
   },
   "keywords": ["mcp", "fortune-telling", "api", "llm", "ai", "prediction", "divination", "model-context-protocol", "docker"],
   "author": "zhaoolee <zhaoolee@gmail.com>",
@@ -30,4 +30,4 @@
   "engines": {
     "node": ">=22.14.0"
   }
-} 
+}

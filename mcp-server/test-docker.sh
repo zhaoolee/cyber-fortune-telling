@@ -14,7 +14,7 @@ NC='\033[0m' # No Color
 
 # Test variables
 IMAGE_NAME="cyber-fortune-mcp-server"
-API_URL="http://localhost:11337/api"
+API_URL="http://localhost:4000/api"
 
 echo -e "\n${YELLOW}1. Checking if Docker image exists...${NC}"
 if docker image inspect $IMAGE_NAME >/dev/null 2>&1; then
@@ -60,4 +60,4 @@ echo -e "\n${YELLOW}Usage examples:${NC}"
 echo "1. Run directly:"
 echo "   docker run --rm -i --network host -e CYBER_FORTUNE_API_BASE_URL=$API_URL $IMAGE_NAME"
 echo ""
-echo "2. Use in MCP Inspector with docker-mcp.json configuration" 
+echo "2. Use in MCP Inspector with docker-mcp.json configuration"

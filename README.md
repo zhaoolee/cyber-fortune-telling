@@ -136,7 +136,7 @@ npm run docker:build
       "args": [
         "run", "--rm", "-i",
         "--network", "host",
-        "-e", "CYBER_FORTUNE_API_BASE_URL=http://localhost:11337/api",
+        "-e", "CYBER_FORTUNE_API_BASE_URL=http://localhost:4000/api",
         "-e", "LOG_LEVEL=info",
         "cyber-fortune-mcp-server"
       ],
@@ -192,16 +192,53 @@ OPENAI_BASE_URL=https://api.deepseek.com/v1
 
 ## 🚀 启动项目
 
-### 使用 Docker Compose（推荐）
+### 本地开发（全 Docker 驱动）
+
+本地开发不需要在宿主机安装 Node.js、npm、pnpm 或 PostgreSQL，只需要 Docker 和 Docker Compose。开发容器会挂载源码，依赖安装在 Docker volume 里。
 
 ```bash
-# 构建服务
-docker compose build --no-cache
-
-# 启动所有服务
-docker compose up
+# 首次启动或 Dockerfile / package 变更后
+docker compose -f docker-compose.dev.yml up --build
 
 # 后台运行
+docker compose -f docker-compose.dev.yml up -d
+
+# 查看日志
+docker compose -f docker-compose.dev.yml logs -f
+
+# 停止开发环境
+docker compose -f docker-compose.dev.yml down
+```
+
+开发环境访问地址：
+
+- 前端：http://localhost:4000
+- Strapi API：http://localhost:4000/api
+- Strapi 管理后台：http://localhost:4000/admin
+- PostgreSQL：仅容器内访问，不暴露宿主机端口
+
+开发模式下前端默认请求同源 `/api`，由 Next.js 转发到 Docker 内部的 Strapi 后端。通常不需要配置 API 地址；如需绕过转发器，修改 `.env` 中的：
+
+```bash
+DEV_NEXT_PUBLIC_API_BASE_URL=https://your-api.example.com
+```
+
+如果 `package.json` 或 lockfile 变更，重新构建开发镜像：
+
+```bash
+docker compose -f docker-compose.dev.yml build --no-cache
+docker compose -f docker-compose.dev.yml up -d
+```
+
+### 使用 Docker Compose（推荐）
+
+GitHub Actions 会把前后端镜像发布到 Docker Hub，服务器只需要拉取镜像运行，不需要在服务器上构建。
+
+```bash
+# 拉取最新镜像
+docker compose pull
+
+# 启动所有服务（后台运行）
 docker compose up -d
 
 # 查看日志
@@ -211,9 +248,80 @@ docker compose logs -f
 docker compose down
 ```
 
-## 如果不需要Docker数据库服务(请前往.env自定义数据库信息)
+## 数据安全与上线流程
+
+本地开发和线上部署使用不同的 Docker 数据卷：
+
+- 本地开发：`docker-compose.dev.yml` 使用 `postgres_dev_data`
+- 线上部署：`docker-compose.yml` 使用 `postgres_data`
+
+不要让本地开发环境连接线上数据库。上线前先备份线上数据库，再拉取新镜像并重启服务：
+
+```bash
+./scripts/deploy.sh
 ```
-docker compose -f docker-compose-no-database.yml
+
+如需只备份数据库：
+
+```bash
+./scripts/backup-database.sh
+```
+
+备份文件会写入 `backups/` 目录，该目录不会提交到 Git。如需恢复某个备份，可在服务器上执行：
+
+```bash
+docker compose exec -T database pg_restore -U "$DATABASE_USERNAME" -d "$DATABASE_NAME" --clean --if-exists < backups/your-backup.dump
+```
+
+## GitHub Actions 构建并发布镜像
+
+项目已配置 `.github/workflows/docker-publish.yml`，当推送到 `dev`、`main` 或推送 `v*` tag 时，会自动构建并发布镜像到 Docker Hub：
+
+- `dev` 分支发布 `dev` 标签
+- `main` 分支发布 `latest` 标签
+- `v*` tag 发布对应版本标签，例如 `v0.2.0` 会发布 `v0.2.0`、`0.2.0`、`0.2`
+- 每次构建都会额外发布 `sha-xxxxxxx` 标签
+
+需要在 GitHub 仓库中配置以下 Secrets：
+
+```bash
+DOCKERHUB_USERNAME=你的 Docker Hub 用户名
+DOCKERHUB_TOKEN=你的 Docker Hub access token
+```
+
+可选配置 GitHub Variables 或 Secrets：
+
+```bash
+DOCKERHUB_REPOSITORY_BACKEND=cyber-fortune-telling-backend
+DOCKERHUB_REPOSITORY_FRONTEND=cyber-fortune-telling-frontend
+NEXT_PUBLIC_API_BASE_URL=
+BACKEND_INTERNAL_URL=http://backend:11337
+```
+
+默认情况下，浏览器只访问前端同源地址，`/api`、`/admin`、`/uploads` 等路径由 Next.js 转发到 Docker 内部的 Strapi 服务。`NEXT_PUBLIC_API_BASE_URL` 通常保持为空；如果要让浏览器直连外部后端，才需要填写公网后端地址，例如：
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=https://your-api.example.com
+```
+
+`BACKEND_INTERNAL_URL` 是 Next.js 转发器访问 Strapi 的容器内地址，默认 `http://backend:11337`。
+
+服务器 `.env` 里的镜像配置需要和 Docker Hub 仓库名保持一致：
+
+```bash
+DOCKERHUB_USERNAME=zhaoolee
+DOCKERHUB_BACKEND_IMAGE=cyber-fortune-telling-backend
+DOCKERHUB_FRONTEND_IMAGE=cyber-fortune-telling-frontend
+VERSION=latest
+```
+
+如果服务器要跟随 `dev` 分支镜像，把 `VERSION` 改成 `dev`；如果要固定版本，把 `VERSION` 改成发布 tag 对应的版本号，例如 `0.2.0`。
+
+如果想在 Docker 中临时构建生产镜像，直接使用主 Compose 文件即可：
+
+```bash
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ## 开发者备忘
@@ -224,16 +332,8 @@ git checkout dev
 
 git pull
 
-# 构建新镜像
-
-docker compose -f ./docker-compose-no-database.yml build --no-cache
-
-# 关闭旧服务
-docker compose -f ./docker-compose-no-database.yml down
-
-
-# 启动
-docker compose -f ./docker-compose-no-database.yml up -d
+# 备份数据库、拉取新镜像并重启服务
+./scripts/deploy.sh
 
 ```
 
@@ -265,7 +365,8 @@ docker compose -f ./docker-compose-no-database.yml up -d
 
 ### 访问地址
 - 前端：http://localhost:4000
-- 管理后台：http://localhost:11337/admin
+- API：http://localhost:4000/api
+- 管理后台：http://localhost:4000/admin
 
 ## 🌟 功能特色
 
@@ -309,20 +410,21 @@ docker compose -f ./docker-compose-no-database.yml up -d
 项目使用 Docker Compose 进行容器化部署，包含以下服务：
 
 - **PostgreSQL 17.5** - 数据库服务，端口 5432
-- **Strapi Backend** - 后端服务，端口 1337
-- **Next.js Frontend** - 前端服务，端口 4000
+- **Strapi Backend** - 后端服务，仅容器内访问
+- **Next.js Frontend** - 前端服务，对外端口 4000，并转发后端接口和后台页面
 
 ### 环境要求
 
 - Docker 20.10+
 - Docker Compose 2.0+
-- Node.js 22.14.0+（本地开发）
 
 ### 数据持久化
 
 - `postgres_data` - PostgreSQL 数据
 - `backend_uploads` - 后端上传文件
 - `backend_data` - 后端临时数据
+- `postgres_dev_data` - 本地开发 PostgreSQL 数据
+- `backend_dev_node_modules` / `frontend_dev_node_modules` - 本地开发容器依赖
 
 
 

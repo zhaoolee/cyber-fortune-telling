@@ -18,7 +18,7 @@ import { useRouter } from "next/router";
 import FortuneMasterAvatar from "../components/FortuneMasterAvatar";
 
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:11337";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || "";
 
 // 格式化时间为 HH:mm:ss.SSS

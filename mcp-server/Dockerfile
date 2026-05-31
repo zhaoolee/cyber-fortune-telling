@@ -28,7 +28,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD node -e "console.log('MCP Server Health Check OK')" || exit 1
 
 # Default environment variables
-ENV CYBER_FORTUNE_API_BASE_URL=http://localhost:11337/api
+ENV CYBER_FORTUNE_API_BASE_URL=http://localhost:4000/api
 ENV LOG_LEVEL=info
 ENV NODE_ENV=production
 
@@ -41,4 +41,4 @@ LABEL \
     org.opencontainers.image.description="MCP Server for Fortune Telling API integration" \
     org.opencontainers.image.vendor="zhaoolee" \
     org.opencontainers.image.version="1.0.0" \
-    org.opencontainers.image.source="https://github.com/zhaoolee/cyber-fortune-telling" 
+    org.opencontainers.image.source="https://github.com/zhaoolee/cyber-fortune-telling"

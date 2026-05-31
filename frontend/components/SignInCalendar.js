@@ -6,7 +6,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 // API 配置
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:11337";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || "";
 
 // Helper to get all days in current month
@@ -97,7 +97,7 @@ export default function SignInCalendar({ fortune_telling_uid }) {
             onClick={() => setOpen(true)}
             size="large"
           >
-            <CalendarMonthIcon sx={{ fontSize: 36, color: '#1A237E' }} />
+            <CalendarMonthIcon sx={{ fontSize: 36, color: '#622a1d' }} />
           </IconButton>
         </Box>
       )}
@@ -108,7 +108,7 @@ export default function SignInCalendar({ fortune_telling_uid }) {
               <IconButton size="small" sx={{ position: 'absolute', top: 8, right: 8 }} onClick={() => setOpen(false)}>
                 <CloseIcon />
               </IconButton>
-              <Typography variant="h6" sx={{ color: '#1A237E', fontWeight: 700, mb: 1 }}>每日签到</Typography>
+              <Typography variant="h6" sx={{ color: '#622a1d', fontWeight: 700, mb: 1 }}>每日签到</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
                 <Button size="small" onClick={handlePrevMonth} sx={{ minWidth: 0, px: 1 }}>&lt;</Button>
                 <Typography variant="subtitle1" sx={{ mx: 2, fontWeight: 600 }}>
@@ -117,7 +117,7 @@ export default function SignInCalendar({ fortune_telling_uid }) {
                 <Button size="small" onClick={handleNextMonth} sx={{ minWidth: 0, px: 1 }}>&gt;</Button>
               </Box>
               <Box sx={{ minHeight: 270, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', mb: 1 }}>
-                <Typography variant="body2" sx={{ color: '#1A237E', fontWeight: 500, textAlign: 'center', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: '#622a1d', fontWeight: 500, textAlign: 'center', mb: 1 }}>
                   累计签到：{signInDays.length} 天
                 </Typography>
                 {loading ? (
@@ -138,7 +138,7 @@ export default function SignInCalendar({ fortune_telling_uid }) {
                             width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
                             borderRadius: '50%',
                             background: signed ? (isToday ? '#FFD700' : '#F4C430') : (isToday ? '#FFF8DC' : 'transparent'),
-                            color: signed ? '#1A237E' : (isToday ? '#FFD700' : '#1A237E'),
+                            color: signed ? '#622a1d' : (isToday ? '#FFD700' : '#622a1d'),
                             fontWeight: isToday ? 700 : 400,
                             border: isToday ? '2px solid #FFD700' : 'none',
                             boxShadow: signed ? 2 : 0,
@@ -154,7 +154,7 @@ export default function SignInCalendar({ fortune_telling_uid }) {
               <Button
                 variant="contained"
                 fullWidth
-                sx={{ background: '#FFD700', color: '#1A237E', fontWeight: 700, mt: 1, mb: 1, '&:hover': { background: '#F4C430' } }}
+                sx={{ background: '#FFD700', color: '#622a1d', fontWeight: 700, mt: 1, mb: 1, '&:hover': { background: '#F4C430' } }}
                 disabled={signInDays.includes(today) || signingIn || !(viewYear === currentYear && viewMonth === currentMonth)}
                 onClick={handleSignIn}
               >
@@ -167,4 +167,4 @@ export default function SignInCalendar({ fortune_telling_uid }) {
       )}
     </>
   );
-} 
+}

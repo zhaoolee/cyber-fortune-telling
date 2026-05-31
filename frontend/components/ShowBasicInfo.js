@@ -148,7 +148,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
               variant="h6"
               gutterBottom
               sx={{
-                color: "#1A237E",
+                color: "#622a1d",
                 fontWeight: 700,
                 textAlign: "center",
                 mb: 0,
@@ -177,7 +177,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                 <Stack direction="row" spacing={1}>
                   <Typography
                     className={fortuneTellingUidStyles["user-info-title"]}
-                    sx={{ fontWeight: 600, color: "#1A237E" }}
+                    sx={{ fontWeight: 600, color: "#622a1d" }}
                   >
                     姓名：
                   </Typography>
@@ -190,7 +190,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                 <Stack direction="row" spacing={1}>
                   <Typography
                     className={fortuneTellingUidStyles["user-info-title"]}
-                    sx={{ fontWeight: 600, color: "#1A237E" }}
+                    sx={{ fontWeight: 600, color: "#622a1d" }}
                   >
                     性别：
                   </Typography>
@@ -206,7 +206,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                 <Stack direction="row" spacing={1}>
                   <Typography
                     className={fortuneTellingUidStyles["user-info-title"]}
-                    sx={{ fontWeight: 600, color: "#1A237E" }}
+                    sx={{ fontWeight: 600, color: "#622a1d" }}
                   >
                     生日：
                   </Typography>
@@ -220,7 +220,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                 <Stack direction="row" spacing={1}>
                   <Typography
                     className={fortuneTellingUidStyles["user-info-title"]}
-                    sx={{ fontWeight: 600, color: "#1A237E" }}
+                    sx={{ fontWeight: 600, color: "#622a1d" }}
                   >
                     时间：
                   </Typography>
@@ -239,7 +239,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       size="small"
                       onClick={() => setIsExpanded(!isExpanded)}
                       sx={{
-                        color: "#1A237E",
+                        color: "#622a1d",
                         fontSize: "12px",
                         textTransform: "none",
                         minWidth: 0,
@@ -258,7 +258,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       <Stack direction="row" spacing={1}>
                         <Typography
                           className={fortuneTellingUidStyles["user-info-title"]}
-                          sx={{ fontWeight: 600, color: "#1A237E" }}
+                          sx={{ fontWeight: 600, color: "#622a1d" }}
                         >
                           身高：
                         </Typography>
@@ -273,7 +273,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       <Stack direction="row" spacing={1}>
                         <Typography
                           className={fortuneTellingUidStyles["user-info-title"]}
-                          sx={{ fontWeight: 600, color: "#1A237E" }}
+                          sx={{ fontWeight: 600, color: "#622a1d" }}
                         >
                           体重：
                         </Typography>
@@ -288,7 +288,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       <Stack direction="row" spacing={1}>
                         <Typography
                           className={fortuneTellingUidStyles["user-info-title"]}
-                          sx={{ fontWeight: 600, color: "#1A237E" }}
+                          sx={{ fontWeight: 600, color: "#622a1d" }}
                         >
                           职业：
                         </Typography>
@@ -303,7 +303,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       <Stack direction="row" spacing={1}>
                         <Typography
                           className={fortuneTellingUidStyles["user-info-title"]}
-                          sx={{ fontWeight: 600, color: "#1A237E" }}
+                          sx={{ fontWeight: 600, color: "#622a1d" }}
                         >
                           体质：
                         </Typography>
@@ -318,7 +318,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       <Stack direction="row" spacing={1}>
                         <Typography
                           className={fortuneTellingUidStyles["user-info-title"]}
-                          sx={{ fontWeight: 600, color: "#1A237E" }}
+                          sx={{ fontWeight: 600, color: "#622a1d" }}
                         >
                           睡眠：
                         </Typography>
@@ -333,7 +333,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       <Stack direction="row" spacing={1}>
                         <Typography
                           className={fortuneTellingUidStyles["user-info-title"]}
-                          sx={{ fontWeight: 600, color: "#1A237E" }}
+                          sx={{ fontWeight: 600, color: "#622a1d" }}
                         >
                           运动：
                         </Typography>
@@ -348,7 +348,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       <Stack direction="row" spacing={1}>
                         <Typography
                           className={fortuneTellingUidStyles["user-info-title"]}
-                          sx={{ fontWeight: 600, color: "#1A237E" }}
+                          sx={{ fontWeight: 600, color: "#622a1d" }}
                         >
                           症状：
                         </Typography>
@@ -363,7 +363,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       <Stack direction="row" spacing={1}>
                         <Typography
                           className={fortuneTellingUidStyles["user-info-title"]}
-                          sx={{ fontWeight: 600, color: "#1A237E" }}
+                          sx={{ fontWeight: 600, color: "#622a1d" }}
                         >
                           饮食：
                         </Typography>
@@ -378,7 +378,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       <Stack direction="row" spacing={1}>
                         <Typography
                           className={fortuneTellingUidStyles["user-info-title"]}
-                          sx={{ fontWeight: 600, color: "#1A237E" }}
+                          sx={{ fontWeight: 600, color: "#622a1d" }}
                         >
                           不适：
                         </Typography>
@@ -393,7 +393,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       <Stack direction="row" spacing={1}>
                         <Typography
                           className={fortuneTellingUidStyles["user-info-title"]}
-                          sx={{ fontWeight: 600, color: "#1A237E" }}
+                          sx={{ fontWeight: 600, color: "#622a1d" }}
                         >
                           补充：
                         </Typography>
@@ -419,7 +419,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       variant="subtitle2"
                       sx={{ 
                         fontWeight: 600, 
-                        color: "#1A237E",
+                        color: "#622a1d",
                         mb: 1.5,
                         textAlign: "left"
                       }}
@@ -440,7 +440,7 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                           }
                           size="small"
                           sx={{
-                            backgroundColor: "#1A237E",
+                            backgroundColor: "#622a1d",
                             color: "white",
                             fontSize: "11px",
                             height: "24px",
@@ -477,8 +477,8 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                       size="medium"
                       startIcon={<SettingsIcon />}
                       sx={{ 
-                        color: "#1A237E",
-                        borderColor: "#1A237E",
+                        color: "#622a1d",
+                        borderColor: "#622a1d",
                         borderRadius: "20px",
                         px: 3,
                         py: 1,
@@ -488,9 +488,9 @@ function ShowBasicInfo({ fortune_telling_uid }) {
                         boxShadow: "0 2px 4px rgba(26, 35, 126, 0.1)",
                         transition: "all 0.2s ease-in-out",
                         "&:hover": {
-                          backgroundColor: "#1A237E",
+                          backgroundColor: "#622a1d",
                           color: "white",
-                          borderColor: "#1A237E",
+                          borderColor: "#622a1d",
                           boxShadow: "0 4px 8px rgba(26, 35, 126, 0.2)",
                           transform: "translateY(-1px)",
                         },

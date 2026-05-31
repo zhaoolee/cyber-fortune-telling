@@ -20,7 +20,7 @@ npm run docker:build
       "args": [
         "run", "--rm", "-i",
         "--network", "host",
-        "-e", "CYBER_FORTUNE_API_BASE_URL=http://localhost:11337/api",
+        "-e", "CYBER_FORTUNE_API_BASE_URL=http://localhost:4000/api",
         "-e", "LOG_LEVEL=info",
         "cyber-fortune-mcp-server"
       ],

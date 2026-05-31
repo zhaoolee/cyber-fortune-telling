@@ -1,0 +1,108 @@
+name: Publish Docker Images
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      next_public_api_base_url:
+        description: "NEXT_PUBLIC_API_BASE_URL baked into the frontend image"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - name: backend
+            context: ./backend
+            file: ./backend/Dockerfile
+            default_repository: cyber-fortune-telling-backend
+          - name: frontend
+            context: ./frontend
+            file: ./frontend/Dockerfile
+            default_repository: cyber-fortune-telling-frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Resolve image name
+        id: image
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_REPOSITORY_BACKEND: ${{ vars.DOCKERHUB_REPOSITORY_BACKEND }}
+          DOCKERHUB_REPOSITORY_FRONTEND: ${{ vars.DOCKERHUB_REPOSITORY_FRONTEND }}
+          DOCKERHUB_REPOSITORY_BACKEND_SECRET: ${{ secrets.DOCKERHUB_REPOSITORY_BACKEND }}
+          DOCKERHUB_REPOSITORY_FRONTEND_SECRET: ${{ secrets.DOCKERHUB_REPOSITORY_FRONTEND }}
+          SERVICE_NAME: ${{ matrix.service.name }}
+          DEFAULT_REPOSITORY: ${{ matrix.service.default_repository }}
+        run: |
+          if [ "$SERVICE_NAME" = "backend" ]; then
+            repo="${DOCKERHUB_REPOSITORY_BACKEND:-${DOCKERHUB_REPOSITORY_BACKEND_SECRET:-$DEFAULT_REPOSITORY}}"
+          else
+            repo="${DOCKERHUB_REPOSITORY_FRONTEND:-${DOCKERHUB_REPOSITORY_FRONTEND_SECRET:-$DEFAULT_REPOSITORY}}"
+          fi
+          echo "name=${DOCKERHUB_USERNAME}/${repo}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve build config
+        id: config
+        env:
+          WORKFLOW_INPUT_API_BASE_URL: ${{ github.event.inputs.next_public_api_base_url }}
+          NEXT_PUBLIC_API_BASE_URL_VAR: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+          NEXT_PUBLIC_API_BASE_URL_SECRET: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+          BACKEND_INTERNAL_URL_VAR: ${{ vars.BACKEND_INTERNAL_URL }}
+          BACKEND_INTERNAL_URL_SECRET: ${{ secrets.BACKEND_INTERNAL_URL }}
+        run: |
+          api_base_url="${WORKFLOW_INPUT_API_BASE_URL:-${NEXT_PUBLIC_API_BASE_URL_VAR:-${NEXT_PUBLIC_API_BASE_URL_SECRET:-}}}"
+          backend_internal_url="${BACKEND_INTERNAL_URL_VAR:-${BACKEND_INTERNAL_URL_SECRET:-http://backend:11337}}"
+          echo "next_public_api_base_url=${api_base_url}" >> "$GITHUB_OUTPUT"
+          echo "backend_internal_url=${backend_internal_url}" >> "$GITHUB_OUTPUT"
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image.outputs.name }}
+          tags: |
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=sha,prefix=sha-
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.service.context }}
+          file: ${{ matrix.service.file }}
+          push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            NEXT_PUBLIC_API_BASE_URL=${{ steps.config.outputs.next_public_api_base_url }}
+            BACKEND_INTERNAL_URL=${{ steps.config.outputs.backend_internal_url }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

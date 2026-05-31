@@ -1,0 +1,89 @@
+services:
+  database:
+    image: postgres:17.5-alpine
+    container_name: fortune-telling-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-fortune_telling_dev}
+      POSTGRES_USER: ${DATABASE_USERNAME:-strapi}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-strapi_password}
+    expose:
+      - "5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-strapi} -d ${DATABASE_NAME:-fortune_telling_dev}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    image: fortune-telling-backend-dev
+    container_name: fortune-telling-backend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
+      API_TOKEN_SALT: ${API_TOKEN_SALT}
+      APP_KEYS: ${APP_KEYS}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL}
+      STRAPI_TELEMETRY_DISABLED: true
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${DATABASE_NAME:-fortune_telling_dev}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-strapi}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-strapi_password}
+      DATABASE_SSL: "false"
+      DATABASE_FILENAME: ${DATABASE_FILENAME:-.tmp/data.db}
+      HOST: 0.0.0.0
+      BACKEND_PORT: ${BACKEND_PORT:-11337}
+    expose:
+      - "${BACKEND_PORT:-11337}"
+    volumes:
+      - ./backend:/app
+      - backend_dev_node_modules:/app/node_modules
+      - backend_dev_tmp:/app/.tmp
+      - backend_dev_uploads:/app/public/uploads
+    depends_on:
+      database:
+        condition: service_healthy
+    command: ["npm", "run", "dev"]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    image: fortune-telling-frontend-dev
+    container_name: fortune-telling-frontend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_BASE_URL: ${DEV_NEXT_PUBLIC_API_BASE_URL:-}
+      BACKEND_INTERNAL_URL: http://backend:${BACKEND_PORT:-11337}
+      NEXT_TELEMETRY_DISABLED: 1
+      WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./frontend:/app
+      - frontend_dev_node_modules:/app/node_modules
+      - frontend_dev_next:/app/.next
+    depends_on:
+      - backend
+    command: ["pnpm", "run", "dev", "--hostname", "0.0.0.0"]
+
+volumes:
+  postgres_dev_data:
+  backend_dev_node_modules:
+  backend_dev_tmp:
+  backend_dev_uploads:
+  frontend_dev_node_modules:
+  frontend_dev_next:

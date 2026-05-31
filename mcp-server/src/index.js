@@ -14,7 +14,7 @@ import axios from 'axios';
  */
 
 // Default API base URL - can be overridden via environment variable
-const API_BASE_URL = process.env.CYBER_FORTUNE_API_BASE_URL || 'http://localhost:11337/api';
+const API_BASE_URL = process.env.CYBER_FORTUNE_API_BASE_URL || 'http://localhost:4000/api';
 
 /**
  * Makes HTTP requests to the fortune telling API
@@ -27,7 +27,7 @@ async function makeApiRequest(endpoint, options = {}) {
       timeout: 30000, // 30 second timeout
       ...options
     });
-    
+
     return {
       success: true,
       data: response.data,
@@ -66,7 +66,7 @@ async function handleStreamingRequest(endpoint, options = {}) {
       response.data.on('data', (chunk) => {
         const chunkStr = chunk.toString();
         chunks.push(chunkStr);
-        
+
         // Parse SSE data
         const lines = chunkStr.split('\n');
         for (const line of lines) {
@@ -225,14 +225,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       case "generate_fortune_telling": {
         const { fortune_telling_uid, date } = args;
-        
+
         if (!fortune_telling_uid || !date) {
           throw new Error("Missing required parameters: fortune_telling_uid and date");
         }
 
         const endpoint = `/anything-request?fortune_telling_uid=${encodeURIComponent(fortune_telling_uid)}&date=${encodeURIComponent(date)}`;
         const result = await handleStreamingRequest(endpoint);
-        
+
         if (!result.success) {
           throw new Error(`Failed to generate fortune telling: ${result.error}`);
         }
@@ -249,14 +249,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case "get_conversation_history": {
         const { fortune_telling_uid, date } = args;
-        
+
         if (!fortune_telling_uid || !date) {
           throw new Error("Missing required parameters: fortune_telling_uid and date");
         }
 
         const endpoint = `/anything-request/getConversationIdAndHistory?fortune_telling_uid=${encodeURIComponent(fortune_telling_uid)}&date=${encodeURIComponent(date)}`;
         const result = await makeApiRequest(endpoint, { method: 'GET' });
-        
+
         if (!result.success) {
           throw new Error(`Failed to get conversation history: ${result.error}`);
         }
@@ -273,7 +273,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case "ask_llm_question": {
         const { conversationId, prompt } = args;
-        
+
         if (!conversationId || !prompt) {
           throw new Error("Missing required parameters: conversationId and prompt");
         }
@@ -302,7 +302,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             response.data.on('data', (chunk) => {
               const chunkStr = chunk.toString();
               chunks.push(chunkStr);
-              
+
               const lines = chunkStr.split('\n');
               for (const line of lines) {
                 if (line.startsWith('data: ')) {
@@ -343,7 +343,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             error: error.message
           };
         });
-        
+
         if (!result.success) {
           throw new Error(`Failed to get LLM answer: ${result.error}`);
         }
@@ -360,20 +360,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case "get_desk_decoration_info": {
         const { fortune_telling_uid, date } = args;
-        
+
         if (!fortune_telling_uid || !date) {
           throw new Error("Missing required parameters: fortune_telling_uid and date");
         }
 
         const endpoint = `/anything-request/getInfoForDeskDecor?fortune_telling_uid=${encodeURIComponent(fortune_telling_uid)}&date=${encodeURIComponent(date)}`;
         const result = await makeApiRequest(endpoint, { method: 'GET' });
-        
+
         if (!result.success) {
           throw new Error(`Failed to get desk decoration info: ${result.error}`);
         }
 
         const { tips, deskDecor } = result.data;
-        
+
         return {
           content: [
             {
@@ -411,4 +411,4 @@ async function main() {
 main().catch((error) => {
   console.error("Fatal error in main():", error);
   process.exit(1);
-}); 
+});

@@ -1,0 +1,14 @@
+.env
+.env.*
+.next
+out
+build
+dist
+node_modules
+npm-debug.log*
+pnpm-debug.log*
+*.log
+.DS_Store
+public/sw.js
+public/sw.js.map
+public/workbox-*.js

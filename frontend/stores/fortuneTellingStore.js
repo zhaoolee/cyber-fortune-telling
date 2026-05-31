@@ -7,21 +7,21 @@ import extractFortuneTips from '@/tools/extractFortuneTips';
 import formatBirthTime from '@/tools/formatBirthTime';
 
 // API 配置
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:11337";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || "";
 
 const useFortuneTellingStore = create((set, get) => ({
   // ============ 用户信息相关状态 ============
   fortuneTellingUserInfo: {},
   setFortuneTellingUserInfo: (info) => set({ fortuneTellingUserInfo: info }),
-  
+
   // ============ 加载状态 ============
   loading: false,
   error: null,
   isStreaming: false,
   getFortuneTellingUserInfoLoading: false,
   getFortuneTellingUserInfoError: null,
-  
+
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
   setIsStreaming: (isStreaming) => set({ isStreaming }),
@@ -33,7 +33,7 @@ const useFortuneTellingStore = create((set, get) => ({
   streamingText: "",
   allowRunFortuneTellingRequest: false,
   requestFortuneTellingInfoDone: false,
-  
+
   setFortuneData: (data) => set({ fortuneData: data }),
   setStreamingText: (text) => set({ streamingText: text }),
   setAllowRunFortuneTellingRequest: (allow) => set({ allowRunFortuneTellingRequest: allow }),
@@ -44,7 +44,7 @@ const useFortuneTellingStore = create((set, get) => ({
   spiritualPractice: false,
   showInput: true,
   historyOpen: false,
-  
+
   setIsEditing: (editing) => set({ isEditing: editing }),
   setSpiritualPractice: (practice) => set({ spiritualPractice: practice }),
   setShowInput: (show) => set({ showInput: show }),
@@ -52,7 +52,7 @@ const useFortuneTellingStore = create((set, get) => ({
 
   // ============ 用户信息更新后需要重新请求算命信息的标志 ============
   hadUpdateUserInfoNeedRequestFortuneTellingInfo: false,
-  
+
   setHadUpdateUserInfoNeedRequestFortuneTellingInfo: (need) => set({ hadUpdateUserInfoNeedRequestFortuneTellingInfo: need }),
 
   // ============ 对话相关 ============
@@ -63,7 +63,7 @@ const useFortuneTellingStore = create((set, get) => ({
   newAIResponse: "",
   newAIResponseIsStreaming: false,
   chatInputDisabled: false,
-  
+
   setConversationId: (id) => set({ conversationId: id }),
   setConversationHistory: (history) => set({ conversationHistory: history }),
   setCurrentChatList: (list) => set({ currentChatList: list }),
@@ -71,7 +71,7 @@ const useFortuneTellingStore = create((set, get) => ({
   setNewAIResponse: (response) => set({ newAIResponse: response }),
   setNewAIResponseIsStreaming: (streaming) => set({ newAIResponseIsStreaming: streaming }),
   setChatInputDisabled: (disabled) => set({ chatInputDisabled: disabled }),
-  
+
   addToCurrentChatList: (message) => set((state) => ({
     currentChatList: [...state.currentChatList, message]
   })),
@@ -82,7 +82,7 @@ const useFortuneTellingStore = create((set, get) => ({
   currentTip: "",
   animationKey: 0,
   genderEmoji: "",
-  
+
   setDesktopDecoration: (decoration) => set({ desktopDecoration: decoration }),
   setTips: (tips) => set({ tips }),
   setCurrentTip: (tip) => set({ currentTip: tip }),
@@ -92,7 +92,7 @@ const useFortuneTellingStore = create((set, get) => ({
   // ============ 栏目配置 ============
   fortuneSections: [],
   selectedSections: [],
-  
+
   setFortuneSections: (sections) => set({ fortuneSections: sections }),
   setSelectedSections: (sections) => set({ selectedSections: sections }),
 
@@ -115,11 +115,11 @@ const useFortuneTellingStore = create((set, get) => ({
   },
 
   // ============ 异步操作 ============
-  
+
   // 获取用户信息
   fetchFortuneTellingUserData: async (fortune_telling_uid) => {
     const { setGetFortuneTellingUserInfoLoading, setGetFortuneTellingUserInfoError, setFortuneTellingUserInfo } = get();
-    
+
     try {
       setGetFortuneTellingUserInfoLoading(true);
       setGetFortuneTellingUserInfoError(null);
@@ -132,7 +132,7 @@ const useFortuneTellingStore = create((set, get) => ({
           },
         }
       );
-      
+
       setFortuneTellingUserInfo(response.data.data[0]);
       console.log("设置用户信息==", response.data.data[0]);
     } catch (err) {
@@ -144,13 +144,13 @@ const useFortuneTellingStore = create((set, get) => ({
 
   // 获取对话ID和历史记录
   getConversationId: async (fortune_telling_uid) => {
-    const { 
-      fortuneTellingUserInfo, 
-      setConversationId, 
-      setConversationHistory, 
-      setChatInputDisabled 
+    const {
+      fortuneTellingUserInfo,
+      setConversationId,
+      setConversationHistory,
+      setChatInputDisabled
     } = get();
-    
+
     if (
       fortuneTellingUserInfo.username &&
       fortuneTellingUserInfo.gender &&
@@ -193,7 +193,7 @@ const useFortuneTellingStore = create((set, get) => ({
     if (prompt.length === 0) return;
 
     addToCurrentChatList({ role: "user", content: prompt });
-    
+
     const response = await fetch(
       `${API_BASE_URL}/api/anything-request/getAnswerFromLLM`,
       {
@@ -270,13 +270,13 @@ const useFortuneTellingStore = create((set, get) => ({
 
     setRequestFortuneTellingInfoDone(false);
     console.log("开始占卜");
-    
+
     try {
       setLoading(true);
       setError(null);
       setStreamingText("");
       setIsStreaming(true);
-      
+
       const response = await fetch(
         `${API_BASE_URL}/api/anything-request?fortune_telling_uid=${fortune_telling_uid}&date=${moment().format(
           "YYYY-MM-DD"
@@ -358,12 +358,12 @@ const useFortuneTellingStore = create((set, get) => ({
       if (!fortuneTellingUserInfo || !fortuneTellingUserInfo.documentId) {
         throw new Error("无效的用户信息");
       }
-      
+
       const submitData = {
         ...formData,
         birth_time: formatBirthTime(formData.birth_time),
       };
-      
+
       // 处理空字段
       if (submitData.height === "") delete submitData.height;
       if (submitData.weight === "") delete submitData.weight;
@@ -372,13 +372,13 @@ const useFortuneTellingStore = create((set, get) => ({
       if (submitData.sleep_quality === "") delete submitData.sleep_quality;
       if (submitData.exercise_frequency === "") delete submitData.exercise_frequency;
       if (submitData.health_info === "") delete submitData.health_info;
-      
+
       // 处理数组字段
       if (submitData.common_symptoms.length === 0) delete submitData.common_symptoms;
       if (submitData.dietary_preferences.length === 0) delete submitData.dietary_preferences;
       if (submitData.body_discomfort.length === 0) delete submitData.body_discomfort;
       if (submitData.fortune_sections && submitData.fortune_sections.length === 0) delete submitData.fortune_sections;
-      
+
       await axios.put(
         `${API_BASE_URL}/api/fortune-telling-users/${fortuneTellingUserInfo.documentId}`,
         {
@@ -390,7 +390,7 @@ const useFortuneTellingStore = create((set, get) => ({
           },
         }
       );
-      
+
       return { success: true };
     } catch (error) {
       return { success: false, error: "保存失败，请重试。" };
@@ -467,4 +467,4 @@ const useFortuneTellingStore = create((set, get) => ({
   }),
 }));
 
-export default useFortuneTellingStore; 
+export default useFortuneTellingStore;

@@ -1,0 +1,32 @@
+FROM node:22.14.0
+
+WORKDIR /app
+
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
+    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    git \
+    curl \
+    libvips-dev \
+    libvips-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm config set registry https://registry.npmmirror.com/
+
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS="1"
+ENV npm_config_sharp_libvips_binary_host="https://registry.npmmirror.com/-/binary/sharp-libvips"
+ENV STRAPI_TELEMETRY_DISABLED=true
+ENV NODE_ENV=development
+
+COPY package*.json ./
+RUN npm install --verbose
+
+COPY . .
+
+EXPOSE 11337
+
+CMD ["npm", "run", "dev"]

@@ -23,7 +23,7 @@ function ChatMarkdownStack({ item, username, genderEmoji }) {
               backgroundColor: "white",
               borderRadius: "10px",
               padding: "10px",
-              color: '#1a237e',
+              color: '#622a1d',
               // 添加阴影
               boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
             }}>{genderEmoji} {username}</div>

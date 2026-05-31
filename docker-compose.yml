@@ -10,8 +10,6 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "${DATABASE_PORT}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"]
       interval: 60s
@@ -23,7 +21,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    image: fortune-telling-backend:${VERSION:-latest}
+    image: ${DOCKERHUB_USERNAME:-zhaoolee}/${DOCKERHUB_BACKEND_IMAGE:-cyber-fortune-telling-backend}:${VERSION:-latest}
     container_name: fortune-telling-backend
     restart: unless-stopped
     environment:
@@ -46,8 +44,8 @@ services:
       BACKEND_PORT: ${BACKEND_PORT}
       DATABASE_SSL: ${DATABASE_SSL}
       DATABASE_FILENAME: ${DATABASE_FILENAME}
-    ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    expose:
+      - "${BACKEND_PORT}"
     volumes:
       - backend_uploads:/app/public/uploads
       - backend_data:/app/.tmp
@@ -68,11 +66,13 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
-    image: fortune-telling-frontend:${VERSION:-latest}
+        BACKEND_INTERNAL_URL: http://backend:${BACKEND_PORT}
+    image: ${DOCKERHUB_USERNAME:-zhaoolee}/${DOCKERHUB_FRONTEND_IMAGE:-cyber-fortune-telling-frontend}:${VERSION:-latest}
     container_name: fortune-telling-frontend
     restart: unless-stopped
     environment:
       NODE_ENV: production
+      BACKEND_INTERNAL_URL: http://backend:${BACKEND_PORT}
     ports:
       - "4000:4000"
     depends_on:
@@ -88,4 +88,4 @@ services:
 volumes:
   backend_uploads:
   backend_data:
-  postgres_data: 
+  postgres_data:
